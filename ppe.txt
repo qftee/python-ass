@@ -1,6 +1,6 @@
-HC, QFSB, 100, date, date
-FS, JQSB, 100, date, date
-MS, JQSB, 100, date, date
-GL, QFSB, 100, date, date
-GW, PYSB, 100, date, date
-SC, PYSB, 100, date, date
+HC,QFSB,100,date,date
+FS,JQSB,100,date,date
+MS,JQSB,100,date,date
+GL,QFSB,130,date,date
+GW,PYSB,100,date,date
+SC,PYSB,100,date,date

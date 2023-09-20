@@ -37,12 +37,12 @@ except FileNotFoundError:
 
 
 def create_items():
-    hc = f'HC, QFSB, 100, date, date'
-    fs = f'FS, JQSB, 100, date, date'
-    ms = f'MS, JQSB, 100, date, date'
-    gl = f'GL, QFSB, 100, date, date'
-    gw = f'GW, PYSB, 100, date, date'
-    sc = f'SC, PYSB, 100, date, date'
+    hc = f'HC,QFSB,100,date,date'
+    fs = f'FS,JQSB,100,date,date'
+    ms = f'MS,JQSB,100,date,date'
+    gl = f'GL,QFSB,100,date,date'
+    gw = f'GW,PYSB,100,date,date'
+    sc = f'SC,PYSB,100,date,date'
     with open('ppe.txt', 'w') as create_item:
         create_item.write(hc + '\n')
         create_item.write(fs + '\n')
@@ -51,3 +51,28 @@ def create_items():
         create_item.write(gw + '\n')
         create_item.write(sc + '\n')
 
+create_items()
+def supply():
+    supply_item = input('Item code:')
+    quantity = int(input('Quantity(Boxes):'))
+    supply_item.upper()
+
+
+
+def update_inventory():
+    supply_or_distribute = int(input('''"1" Supply
+    "2" Distribute
+    "3" Exit
+    >'''))
+    if supply_or_distribute == 1:
+        supply
+
+    elif supply_or_distribute == 2:
+        distribute
+
+    elif supply_or_distribute == 3:
+        mainmenu
+
+    else:
+        print("Sorry, I don't understand")
+        update_inventory
