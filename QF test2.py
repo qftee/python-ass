@@ -93,6 +93,7 @@ def supply_or_distribute(s_or_d):
     with open('ppe.txt', 'w') as edit_quantity:
         for item in lines:
             if item.startswith(item_change):
+                print(item)
                 item_info = item.split(',')
                 item_code, item_name, item_quantity, last_supply_date, last_distribute_date = item_info
                 item_quantity = int(item_info[2])
@@ -107,13 +108,15 @@ def supply_or_distribute(s_or_d):
                 elif check_again.upper() == 'N':
                     print('Item Update Failed')
 
-                edit_quantity.write(','.join(item_info))
+                edit_quantity.write(','.join(item_info) + '\n')
             else:
                 item_info = item.split(',')
                 item_code, item_name, item_quantity, last_supply_date, last_distribute_date = item_info
                 item_quantity = int(item_quantity)
-                edit_quantity.write(','.join(item_info))
+                edit_quantity.write(item)
                 print('Item Not Found')
+
 
 create_items()
 update_inventory()
+
