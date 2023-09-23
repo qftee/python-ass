@@ -124,5 +124,6 @@ def supply_or_distribute(s_or_d):
             else:
                 edit_quantity.write(item)
 
-
+create_items()
 update_inventory()
+
