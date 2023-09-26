@@ -78,28 +78,29 @@ def update_inventory():
     elif how_to_manage == 3:
         main_menu()
 
-    else:
         print("Sorry, I don't understand")
         update_inventory()
 
 
 def supply_or_distribute(s_or_d):
     item_change = input('Item code:')
-    quantity_changes = int(input('Quantity(Boxes):'))
     item_change = item_change.upper().strip()
+    count = 0
     with open('ppe.txt', 'r') as edit_quantity:
         lines = edit_quantity.readlines()
 
     with open('ppe.txt', 'w') as edit_quantity:
         for item in lines:
+            count += 1
             if item.startswith(item_change):
                 print(item)
-                item_info = item.split(',')
+                item_info = item.strip().split(',')
                 item_code, item_name, item_quantity, last_supply_date, last_distribute_date = item_info
                 item_quantity = int(item_info[2])
                 check_again = input(f'The remaining quantity is "{item_quantity}" boxes,\n'
                                     f'Are you sure want to {"add" if s_or_d == "supply" else "distribute"} '
                                     f'it ? \nYes(Y)  No(N)\n>')
+                quantity_changes = int(input('Quantity(Boxes):'))
                 if check_again.upper() == 'Y':
                     item_info[2] = str(item_quantity + quantity_changes) if s_or_d == 'supply' else str(
                         item_quantity - quantity_changes)
@@ -108,13 +109,11 @@ def supply_or_distribute(s_or_d):
                 elif check_again.upper() == 'N':
                     print('Item Update Failed')
 
-                edit_quantity.write(','.join(item_info) + '\n')
+                edit_quantity.write(','.join(item_info) + "\n")
             else:
-                item_info = item.split(',')
-                item_code, item_name, item_quantity, last_supply_date, last_distribute_date = item_info
-                item_quantity = int(item_quantity)
                 edit_quantity.write(item)
-                print('Item Not Found')
+                if count >= 6:
+                    print('Item Not Found!')
 
 
 create_items()
