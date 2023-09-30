@@ -107,38 +107,30 @@
 #     if (ans.lower() == "n"):
 #         print("Existing from the system")
 #         break
-inven_list = []
-def initial_creation():
-    print("you're in initial creation now.")
-    while True:
-        item_name = input("Enter the item name: ")
-        item_code = input("Enter the item code: ")
-        item_quantity = 100
-        item_supp_name = input("Enter the item supplier: ")
-        item_supp_code = input("Enter the item supplier code: ")
-        details = str(item_name) + ":" + str(item_code) + ":" + str(item_quantity) + ":" + str(item_supp_name) + ":" + str(item_supp_code) + "\n"
-        inven_details_f_read = open("ppes.txt", "a")
-        inven_details_f_read.write(details)
-        choice = input("Did you finish input the details of the inventory (y/n)?")
-        if choice == "y":
+def login_page(allusers):
+
+    # Login
+    userid = input("Enter User ID : ")
+    password = input("Enter Password : ")
+    # Set flag as false
+    flag = False
+    for i in range(len(allusers)):
+        # If user ID and password correct
+        if userid == allusers[i][0] and password == allusers[i][2]:
+            # Set flag as true
+            flag = True
             break
-        if choice == "n":
-            continue
+        # If flag not false
+    if flag == True:
+        return allusers[i]
+    else:
+        return []
 
+allusers = []
 
-def open_file():
+with open("users.txt", "r") as user_file:
+    for user_rec in user_file:
+        record = user_rec.strip().split(":")
+        allusers.append(record)
 
-    try:
-        # open and read the inventory file
-        with open("ppes.txt","r") as inven_details_f:
-            ppe_data = inven_details_f.read()
-            #if don't have inventory data
-            if not ppe_data:
-                initial_creation()
-    except:
-        print("Inventory file not found, auto create a file")
-        # open a inventory file
-        with open("ppes.txt","a") as inven_details_f:
-            initial_creation()
-
-open_file()
+result = login_page(allusers)
