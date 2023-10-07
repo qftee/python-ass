@@ -107,30 +107,11 @@
 #     if (ans.lower() == "n"):
 #         print("Existing from the system")
 #         break
-def login_page(allusers):
+def getdata():
+    try:
+        age = int(input("Please enter your age: "))
+        print("Age: ",age)
+    except:
+        print("invalid input...")
 
-    # Login
-    userid = input("Enter User ID : ")
-    password = input("Enter Password : ")
-    # Set flag as false
-    flag = False
-    for i in range(len(allusers)):
-        # If user ID and password correct
-        if userid == allusers[i][0] and password == allusers[i][2]:
-            # Set flag as true
-            flag = True
-            break
-        # If flag not false
-    if flag == True:
-        return allusers[i]
-    else:
-        return []
-
-allusers = []
-
-with open("users.txt", "r") as user_file:
-    for user_rec in user_file:
-        record = user_rec.strip().split(":")
-        allusers.append(record)
-
-result = login_page(allusers)
+getdata()

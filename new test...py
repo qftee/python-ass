@@ -34,7 +34,7 @@ def open_file():
                 supp_info()
     except:
         print("Suppliers file not found, auto create a file")
-        supp_list = []
+        # supp_list = []
         with open("suppliers.txt","a") as supp_f:
             supp_info()
 def initial_creation():
@@ -236,7 +236,33 @@ def supp_info():
     print("1. Add supplier")
     print("2. Modify supplier")
     print("3. Delete supplier")
+    print("4. Back")
+    choice = input("Enter your choice: ")
+    if choice == "1":
+        supp_list = []
+        add_supp(supp_list)
 
+    if choice == "2":
+        modify_supp()
+
+    if choice == "3":
+        delete_supp()
+
+    if choice == "4":
+        admin_menu()
+
+def add_supp(supp_list):
+    print("Add new supplier")
+    while True:
+        supp_code = input("Enter the supplier code: ")
+        supp_name = input("Enter the name of supplier:")
+        
+
+def modify_supp():
+    print("Modify supllier page")
+
+def delete_supp():
+    print("Delete the supplier")
 
 def delete_user():
     print("Delete user page")
@@ -300,8 +326,8 @@ user_list = []
 #inventory list
 inven_list = []
 
-# supplier list
-supp_list = []
+# # supplier list
+# supp_list = []
 
 
 
