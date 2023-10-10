@@ -65,32 +65,37 @@ def create_items():
 
 
 def update_inventory():
-    how_to_manage = int(input('''"1" Supply
-"2" Distribute
-"3" Main Menu
->'''))
-    if how_to_manage == 1:
-        supply_or_distribute('supply')
+    try:
+        how_to_manage = int(input('"1" Supply \n"2" Distribute \n"3" Main Menu \n>'))
+        if how_to_manage == 1:
+            supply_or_distribute('supply')
 
-    elif how_to_manage == 2:
-        supply_or_distribute('distribute')
+        elif how_to_manage == 2:
+            supply_or_distribute('distribute')
 
-    elif how_to_manage == 3:
-        main_menu()
+        elif how_to_manage == 3:
+            main_menu()
 
-        print("Sorry, I don't understand")
-        update_inventory()
+            print("Sorry, I don't understand")
+            update_inventory()
+    except Exception as e:
+        print("An error occurred:", e)
 
 
 def supply_or_distribute(s_or_d):
     item_change = input('Item code:')
     item_change = item_change.upper().strip()
+    count = 0
+    item_found = False
     with open('ppe.txt', 'r') as edit_quantity:
         lines = edit_quantity.readlines()
+        code_quantity = len(lines)
 
     with open('ppe.txt', 'w') as edit_quantity:
         for item in lines:
+            count += 1
             if item.startswith(item_change):
+                item_found = True
                 print(item)
                 item_info = item.strip().split(',')
                 item_code, item_name, item_quantity, last_supply_date, last_distribute_date = item_info
@@ -103,16 +108,54 @@ def supply_or_distribute(s_or_d):
                     item_info[2] = str(item_quantity + quantity_changes) if s_or_d == 'supply' else str(
                         item_quantity - quantity_changes)
                     item_info[3 if s_or_d == 'supply' else 4] = date_time()
-                    print('Item Successfully Updated')
+                    print('Item Successfully Updated!')
                 elif check_again.upper() == 'N':
-                    print('Item Update Failed')
+                    print('Item Update Failed!')
 
                 edit_quantity.write(','.join(item_info) + "\n")
+
             else:
                 edit_quantity.write(item)
-                print('Item Not Found!')
+                if count == code_quantity and item_found:
+                    break
+                if count == code_quantity and not item.startswith(item_change):
+                    print('Item Not Found!')
 
 
-create_items()
-update_inventory()
+def display_inventory_quantity():
+    all_record = []
+    with open('ppe.txt', 'r') as list:
+        for line in list:
+            all_record.append(line.strip().split(','))
+    for x in range(len(all_record)-1):
+        for y in range(x, len(all_record)):
+            if all_record[x][0] > all_record[y][0]:
+                temp = all_record[x]
+                all_record[x] = all_record[y]
+                all_record[y] = temp
+    for i in range(len(all_record)):
+        print(f'{all_record[i][0]}: Available Quantity:{all_record[i][2]} boxes ')
+
+
+def less_25():
+    with open('ppe.txt', 'r') as check:
+        for line in check:
+            item = line.strip().split(',')
+            item_code, item_name, item_quantity, last_supply_date, last_distribute_date = item
+            if int(item_quantity) < 25:
+                print(f"{item_code}'s quantity is below 25 boxes,\n"
+                      f"The Remaining quantity is {item_quantity}\n")
+
+
+def search_quantity():
+    temporary = []
+    item_search = input('Enter Item Code:')
+    with open('ppe.txt', 'r') as file:
+        for line in file:
+            item = line.strip().split(',')
+            item_code, item_name, item_quantity, last_supply_date, last_distribute_date = item
+            if item_search.upper().strip() == item_code.strip():
+                print(f'The Available Quantity for {item_code} is {item_quantity} boxes\n')
+
+
 
