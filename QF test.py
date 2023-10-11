@@ -98,7 +98,7 @@ def supply_or_distribute(s_or_d):
                 item_found = True
                 print(item)
                 item_info = item.strip().split(',')
-                item_code, item_name, item_quantity, last_supply_date, last_distribute_date = item_info
+                item_code, item_supplier, item_quantity, last_supply_date, last_distribute_date = item_info
                 item_quantity = int(item_info[2])
                 check_again = input(f'The remaining quantity is "{item_quantity}" boxes,\n'
                                     f'Are you sure want to {"add" if s_or_d == "supply" else "distribute"} '
@@ -109,6 +109,9 @@ def supply_or_distribute(s_or_d):
                         item_quantity - quantity_changes)
                     item_info[3 if s_or_d == 'supply' else 4] = date_time()
                     print('Item Successfully Updated!')
+                    with open('transaction.txt', 'a') as trans:
+                        trans.write(f'{"supply" if s_or_d == "supply" else "distribute"}'
+                                    f',{item_code},{item_supplier},{item_info[2]},{quantity_changes},{date_time()}\n')
                 elif check_again.upper() == 'N':
                     print('Item Update Failed!')
 
@@ -156,6 +159,44 @@ def search_quantity():
             item_code, item_name, item_quantity, last_supply_date, last_distribute_date = item
             if item_search.upper().strip() == item_code.strip():
                 print(f'The Available Quantity for {item_code} is {item_quantity} boxes\n')
+
+
+
+def track_filter_date():
+    s_or_d_or_b = input('Please Enter Filter Type:\n'
+                        '"s" supply\n'
+                        '"d" distribute\n'
+                        '"b" both\n> ')
+    start_date_input = input('Please Enter Start Date with the format "yyyy:mm:dd"')
+    end_date_input = input('Please Enter End Date with the format "yyyy:mm:dd"')
+    start_date = datetime.datetime.strptime(start_date_input, "%Y:%m:%d")
+    end_date = datetime.datetime.strptime(end_date_input, "%Y:%m:%d")
+    with open('transaction.txt', "r") as file:
+        for line in file:
+            transaction_details = line.strip().split(',')
+            s_or_d, item_code, supplier_code, remaining_quantity, quantity_change, date_change = transaction_details
+            date_change = datetime.datetime.strptime(date_change, '%a %b %d %X %Y')
+            if s_or_d_or_b == 's':
+                if s_or_d.strip() == 'supply':
+                    if start_date - datetime.timedelta(days=1) <= date_change <= end_date+datetime.timedelta(days=1):
+                        print(transaction_details)
+            elif s_or_d_or_b == 'd':
+                if s_or_d.strip() == 'distribute':
+                    if start_date - datetime.timedelta(days=1) <= date_change <= end_date + datetime.timedelta(days=1):
+                        print(transaction_details)
+            elif s_or_d_or_b =='b':
+                if start_date - datetime.timedelta(days=1) <= date_change <= end_date + datetime.timedelta(days=1):
+                    print(transaction_details)
+            else:
+                print('Sorry,I Dont Understand')
+
+track_filter_date()
+
+
+
+
+
+
 
 
 
