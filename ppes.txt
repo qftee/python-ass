@@ -1,2 +1,2 @@
-hc:head cover:100:s1:sc1
-mask:ms:100:s2:sc2
+a:a:100:a:a
+a:a:100:a:a

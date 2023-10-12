@@ -1,4 +1,19 @@
-def open_file():
+def open_file(user_list, inven_list, supp_list):
+    try:
+        # open and read the inventory file
+        with open("ppes.txt","r") as inven_details_f:
+            ppe_data = inven_details_f.read()
+            #if don't have inventory data
+            if not ppe_data:
+                print("Insert the item details")
+                initial_creation(user_list, inven_list, supp_list)
+
+    except FileNotFoundError:
+        print("Inventory file not found, auto create a file")
+        # open a inventory file
+        with open("ppes.txt","a") as inven_details_f:
+            initial_creation(user_list, inven_list, supp_list)
+
     try:
         #  open and read the users file
         with open("users.txt","r") as user_f:
@@ -6,7 +21,8 @@ def open_file():
             # if don't have user data, add user
             if not user_data:
                 add_user(user_list)
-    except:
+
+    except FileNotFoundError:
         print("Users file not found, auto create a file")
         # open the users file
         with open("users.txt","a") as user_f:
@@ -14,46 +30,103 @@ def open_file():
             add_user(user_list)
 
     try:
-        # open and read the inventory file
-        with open("ppe.txt","r") as inven_details_f:
-            ppe_data = inven_details_f.read()
-            #if don't have inventory data
-            if not ppe_data:
-                initial_creation()
-    except:
-        print("Inventory file not found, auto create a file")
-        # open a inventory file
-        with open("ppe.txt","a") as inven_details_f:
-            initial_creation()
-
-    try:
-
-        with open("suppliers.txt","r") as supp_f:
+        with open("supplierss.txt","r") as supp_f:
             supp_data = supp_f.read()
             if not supp_data:
-                supp_info()
-    except:
+                supp_info(supp_list)
+
+    except FileNotFoundError:
         print("Suppliers file not found, auto create a file")
         # supp_list = []
-        with open("suppliers.txt","a") as supp_f:
-            supp_info()
-def initial_creation():
+        with open("supplierss.txt","a") as supp_f:
+            supp_info(supp_list)
+
+    main_login_page(user_list)
+
+    # try:
+    #     # open and read the inventory file
+    #     with open("ppes.txt","r") as inven_details_f:
+    #         ppe_data = inven_details_f.read(inven_list)
+    #         #if don't have inventory data
+    #         if not ppe_data:
+    #             print("Insert the item details")
+    #             initial_creation(inven_list, user_list)
+    # except:
+    #     print("Inventory file not found, auto create a file")
+    #     # open a inventory file
+    #     with open("ppes.txt","a") as inven_details_f:
+    #         initial_creation(inven_list, user_list)
+
+
+def initial_creation(user_list, inven_list, supp_list):
     print("you're in initial creation now.")
     while True:
-        item_name = input("Enter the item name: ")
         item_code = input("Enter the item code: ")
+        item_name = input("Enter the item name: ")
         item_quantity = 100
         item_supp_name = input("Enter the item supplier: ")
         item_supp_code = input("Enter the item supplier code: ")
-        details = str(item_name) + ":" + str(item_code) + ":" + str(item_quantity) + ":" + str(item_supp_name) + ":" + str(item_supp_code) + "\n"
-        with open("ppes.txt","a") as inven_details_f_read:
-            inven_details_f_read.write(details)
-            choice = input("Did you finish input the details of the inventory (y/n)?")
-            if choice == "y":
-                main_login_page(user_list)
-                break
-            if choice == "n":
-                continue
+        details = str(item_code) + ":" + str(item_name) + ":" + str(item_quantity) + ":" + str(item_supp_name) + ":" + str(item_supp_code)
+        with open("supplierss.txt","a") as supp_f, open("ppes.txt", "a") as inven_details_f_read:
+            supp_details = str(item_supp_code) + ":" + str(item_supp_name)
+            if len(supp_list) == 0:
+                supp_f.write(supp_details + "\n")
+                inven_details_f_read.write(details + "\n")
+                choice = input("Did you finish input the details of the inventory (y/n)?")
+                if choice == "y":
+                    add_user(user_list)
+                    break
+                if choice == "n":
+                    continue
+
+            elif len(supp_list) <= 3:
+                # supp_list.append(supp_details)
+                #supplier code not in suppliers.txt
+                temp_val = str(item_supp_code) + ":" + str(item_supp_name)
+                if temp_val not in supp_list:
+                    print("supplier name: ", item_supp_name)
+                    print("supplier code: ", item_supp_code)
+                    supp_list.append(supp_details)
+
+                else:
+                    pass
+                print("supp_list:", supp_list)
+                print("type of supp_list:", type(supp_list))
+                print("supp_list[0]:",supp_list[0])
+                print("temp_val:", temp_val)
+                print("type of supp_list[0]:", type(supp_list[0]))
+                print("type of temp_val:", type(temp_val))
+                # print(supp_list)
+
+                inven_list.append(details)
+                print(inven_list)
+                choice = input("Did you finish input the details of the inventory (y/n)?")
+                if choice == "y":
+                    add_user(user_list)
+                    break
+                if choice == "n":
+                    continue
+
+            if len(supp_list) > 3:
+                for i in range(len(supp_list)):
+                    if item_supp_code == supp_list[i][4]:
+                        inven_details_f_read.write(details + "\n")
+                        inven_list.append(details)
+                        continue
+                    else:
+                        print("Supplier enough !")
+                        pass
+
+
+        # with open("ppes.txt","a") as inven_details_f_read:
+        #     inven_details_f_read.write(details)
+        #     inven_list.append(details)
+        #     choice = input("Did you finish input the details of the inventory (y/n)?")
+        #     if choice == "y":
+        #         add_user(user_list)
+        #         break
+        #     if choice == "n":
+        #         continue
 
 
 # def main_menu():
@@ -69,18 +142,39 @@ def initial_creation():
 #             staff_login()
 
 def main_login_page(user_list):
-    user_ID = input("Enter your admin ID: ")
-
+    userLogin = False
+    user_ID = input("Enter your user ID: ")
     user_pw = input("Enter your password: ")
+    # with open("users.txt", "r") as user_f:
+    #     for user_rec in user_f:
+    #         rec = user_rec.strip().split(":")
+    #         user_list.append(rec)
     for i in range(len(user_list)):
         if user_ID == len(user_list[i][0]) and user_pw == len(user_list[i][2]):
-            return user_list[i]
-        else:
-            print("Logged in unsuccessful..")
-            return
+            userLogin = True
+            break
+    if userLogin == True:
+        # user_list[i][3].lower("admin")
+        if user_list[i][3] == "admin":
+            print("Successfully entered the admin page.")
+            print("Main menu")
+            print("1. Admin Menu \n 2. Staff Menu")
+            ans = input("Enter your choice: ")
+            if ans == "1":
+                admin_menu(user_list, supp_list, inven_list)
+            if ans == "2":
+                staff_menu(inven_list)
+
+        if user_list[i][3] == "staff":
+            print("Successfully entered staff page.")
+            staff_menu(inven_list)
+        return
+    else:
+        print("Logged in unsuccessful..")
+        return
 
 
-def admin_menu():
+def admin_menu(user_list, supp_list, inven_list):
     print("Admin Menu")
     print("1. Add user")
     print("2. Modify user")
@@ -93,41 +187,52 @@ def admin_menu():
         add_user(user_list)
 
     if choice == "2":
-        modify_user()
+        modify_user(user_list)
 
     if choice == "3":
-        search_function(user_list)
+        search_function(user_list, inven_list)
 
     if choice == "4":
-        supp_info()
+        supp_info(supp_list)
 
     if choice == "5":
-        delete_user()
+        delete_user(user_list)
 
     if choice == "6":
         exit()
 
 
 def add_user(user_list):
+    with open("users.txt", "r") as user_f:
+        for user_rec in user_f:
+            rec = user_rec.strip().split(":")
+            user_list.append(rec)
     while True:
         print("Add user page.")
         user_ID = input("Enter the user ID: ")
         user_name = input("Enter the user name: ")
         user_pw = input("Enter the user password: ")
         user_type = input("Choose the type of user (admin / staff): ")
-        user_details = str(user_ID) + ":" + str(user_name) + ":" + str(user_pw) + ":" + str(user_type) + "\n"
+        user_details = str(user_ID) + ":" + str(user_name) + ":" + str(user_pw) + ":" + str(user_type).lower()
+        # user_list.append(user_details)
         with open("users.txt","a") as user_f:
-            user_f.write(user_details)
+            user_f.write(user_details + "\n")
             ask = input("Did you finish add new user (y/n)?")
             if ask == "y":
-                admin_menu()
+                # with open("users.txt", "a") as user_f:
+                #     for user_rec in user_f:
+                #         rec = user_rec.strip().split(":")
+                #         user_list.append(rec)
+                user_list.append(user_details.split(":"))
+                admin_menu(user_list, supp_list, inven_list)
                 break
 
             if ask == "n":
+                user_list.append(user_details.split(":"))
                 continue
 
 
-def modify_user():
+def modify_user(user_list):
     #print modify menu
     print("Modify Page")
     print("1. Change user name")
@@ -190,31 +295,39 @@ def modify_user():
                     print("The userID does not match and the user type cannot be changed.")
 
 
-def search_function(user_list):
+def search_function(user_list, inven_list):
     print("Search page")
     print("1. Search user")
     print("2. Search items")
     choice = input("Enter your choice: ")
     if choice == "1":
-        print("Search user page")
-        search_userID = input("Enter the user ID you want to search: ")
-        for i in range(len(user_list)):
-            if search_userID == user_list[i][0]:
-                print("User ID: ",user_list[i][0])
-                print("User name: ",user_list[i][1])
-                print("User password: ",user_list[i][2])
-                print("User Type: ",user_list[i][3])
+        search_user(user_list)
+
+    if choice == "2":
+        search_items(inven_list)
+
+def search_user(user_list):
+    userfound = False
+    print("Search user page")
+    print(user_list)
+    search_userID = input("Enter the user ID you want to search: ")
+    print (user_list)
+    for i in range(len(user_list)):
+        if search_userID == user_list[i][0]:
+            userfound = True
+            if userfound == True:
+                print("User ID: ", user_list[i][0])
+                print("User name: ", user_list[i][1])
+                print("User password: ", user_list[i][2])
+                print("User Type: ", user_list[i][3])
                 break
 
             else:
                 print("The user was not found. Please try again.")
-                return
-
-    if choice == "2":
-        search_items()
+                break
 
 
-def search_items():
+def search_items(inven_list):
     print("Search items page")
     search_item_code = input("Enter the items code you want to search: ")
     for i in range(len(inven_list)):
@@ -231,7 +344,7 @@ def search_items():
             return
 
 
-def supp_info():
+def supp_info(supp_list):
     print("Supplier information page.")
     print("1. Add supplier")
     print("2. Modify supplier")
@@ -243,33 +356,87 @@ def supp_info():
         add_supp(supp_list)
 
     if choice == "2":
-        modify_supp()
+        modify_supp(supp_list)
 
     if choice == "3":
-        delete_supp()
+        delete_supp(supp_list)
 
     if choice == "4":
-        admin_menu()
+        return
 
 def add_supp(supp_list):
     print("Add new supplier")
     while True:
         supp_code = input("Enter the supplier code: ")
         supp_name = input("Enter the name of supplier:")
-        
+        supp_details = str(supp_code) + ":" + str(supp_name)
+        with open("suppliers.txt","w") as supp_f:
+            supp_f.write(supp_details)
+            ask = input("Did you finish add new supplier (y/n)?")
+            if ask == "y":
+                supp_info(supp_list)
+                return
 
-def modify_supp():
-    print("Modify supllier page")
+            if ask == "n":
+                continue
 
-def delete_supp():
+def modify_supp(supp_list):
+    print("Modify supplier page")
+    print("1. Change supplier code")
+    print("2. Change supplier name")
+    print("3. Back")
+    choice = input("Enter your choice: ")
+    if choice == "1":
+        print("Change supplier code page")
+        search_supp_code = input("Enter the supplier code you want to search: ")
+        with open("suppliers.txt","r") as supp_f:
+            for i in range(len(supp_list)):
+                if search_supp_code == supp_list[i][0]:
+                    print("Old supplier code is: ",supp_list[0][1])
+                    new_supp_code = int(input("Enter the new supplier code: "))
+                    supp_list[i][0] = new_supp_code
+                    supp_f.write(supp_list[i][0])
+
+    if choice == "2":
+        print("Change supplier name page")
+        search_supp_code = input("Enter the supplier code you want to search: ")
+        with open("suppliers.txt","r") as supp_f:
+            for i in range(len(supp_list)):
+                if search_supp_code == supp_list[i][0]:
+                    print("the name of this supplier is ",supp_list[i][1])
+                    new_name = input("Enter the name you want to change: ")
+                    supp_list[i][1] = new_name
+                    supp_f.write(supp_list[i][1])
+                    print("New name have change successful !!")
+
+    if choice == "3":
+        supp_info(supp_list)
+
+
+def delete_supp(supp_list):
     print("Delete the supplier")
+    search_supp_code = input("Enter the code you want to search: ")
+    with open("suppliers.txt","r") as supp_f:
+        for i in range(len(supp_list)):
+            if search_supp_code == supp_list[i][0]:
+                print("Supplier deleted")
 
-def delete_user():
+            else:
+                supp_f.write(supp_list)
+
+def delete_user(user_list):
     print("Delete user page")
     search_userID = input("Enter the user id you want to search: ")
+    with open("users.txt","r") as user_f:
+        for i in range(len(user_list)):
+            if search_userID == user_list[i][0]:
+                print("User deleted")
+
+            else:
+                user_f.write(user_list)
 
 
-def staff_menu():
+def staff_menu(inven_list):
     print("Staff Menu")
     print("1. Inventory In")
     print("2. Inventory Out")
@@ -278,23 +445,26 @@ def staff_menu():
     print("5. Exit")
     choice = input("Enter your choice: ")
     if choice == "1":
-        inventory_in()
+        inventory_in(inven_list)
 
     if choice == "2":
-        inventory_out()
+        inventory_out(inven_list)
 
     if choice == "3":
-        summary_inven()
+        summary_inven(inven_list)
 
     if choice == "4":
-        search_items()
+        search_items(inven_list)
 
     if choice == "5":
         exit()
 
-def inventory_in():
+def inventory_in(inven_list):
     print("Inventory In page")
+    # enter the inventory code to find the items you want
     search_inven_code = input("Enter the items code for search: ")
+    # let i be the line of the inventory list
+
     for i in range(len(inven_list)):
         if search_inven_code == inven_list[i][0]:
             print("Old Quantity: ", inven_list[i][2])
@@ -306,52 +476,78 @@ def inventory_in():
             print("The person that import the items: ", importer)
             return
         else:
-            print("items code didn't found.")
+            print("Items code didn't found.")
             return
 
-def inventory_out():
-    print("hi")
+def inventory_out(inven_list):
+    print("Inventory Out Page")
+    search_inven_code = input("Enter the items code for search: ")
+    for i in range(len(inven_list)):
+        if search_inven_code == inven_list[i][0]:
+            print("The quantity of the items is",inven_list[i][2])
+            quantity = int(input("Enter the quantity you out: "))
+            importer = input("Enter your user ID: ")
+            new_quantity = inven_list[i][2] - quantity
+            inven_list[i][2] = new_quantity
+            print("The item have out",quantity)
+            print("New quantity: ",inven_list[i][2])
+            print("The person that output the items: ", importer)
+            return inventory_out(inven_list)
 
-def summary_inven():
-    print("hi")
+        else:
+            print("Items code didn't found")
+            return inventory_out(inven_list)
+
+def summary_inven(inven_list):
+    print("Summary Inventory")
+    search_items_code = input("Enter the item code you want to search: ")
+    for i in range(len(inven_list)):
+        if search_items_code == inven_list[i][0]:
+            print("Items code is: ", inven_list[i][0])
+            print("Items name is: ", inven_list[i][1])
+            print("Items quantity is: ",inven_list[i][2])
+            print("Items supplier name is: ",inven_list[i][3])
+            print("Items supplier code is: ",inven_list[i][4])
 
 
+        else:
+            print("Items code not found")
+            return
 
 
+# inventory list
+inven_list = []
+
+# supplier list
+supp_list = []
 
 
 # user list
 user_list = []
-
-#inventory list
-inven_list = []
-
-# # supplier list
-# supp_list = []
-
-
-
-open_file()
 with open("users.txt","r") as user_f:
     for user_rec in user_f:
         rec = user_rec.strip().split(":")
         user_list.append(rec)
 
-result = main_login_page(user_list)
+open_file(user_list, inven_list, supp_list)
 
-while len(result) > 0 :
-    if len(result) > 0 :
-        if result[3] == "Admin":
-            print("Successfully entered the admin page.")
-            print("Main menu")
-            print("1. Admin Menu \n 2. Staff Menu")
-            ans = input("Enter your choice: ")
-            if ans == "1":
-                admin_menu()
-            if ans == "2":
-                staff_menu()
+# result = main_login_page(user_list)
 
-        if result[3] == "Staff":
-            print("Successfully entered staff page.")
-            staff_menu()
+
+
+# if result > 0:
+#     if result[3] == user_list.lower("admin"):
+#         print("Successfully entered the admin page.")
+#         print("Main menu")
+#         print("1. Admin Menu \n 2. Staff Menu")
+#         ans = input("Enter your choice: ")
+#         if ans == "1":
+#             admin_menu(user_list, supp_list, inven_list)
+#         if ans == "2":
+#             staff_menu(inven_list)
+#
+#     if result[3] == user_list.lower("staff"):
+#         print("Successfully entered staff page.")
+#         staff_menu(inven_list)
+
 

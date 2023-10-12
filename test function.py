@@ -107,11 +107,54 @@
 #     if (ans.lower() == "n"):
 #         print("Existing from the system")
 #         break
-def getdata():
-    try:
-        age = int(input("Please enter your age: "))
-        print("Age: ",age)
-    except:
-        print("invalid input...")
+# def getdata():
+#     try:
+#         age = int(input("Please enter your age: "))
+#         print("Age: ",age)
+#     except:
+#         print("invalid input...")
+#
+# getdata()
+# supp_list = []
+# search_supp_code = input("Enter the supplier code you want to search: ")
+#         with open("suppliers1.txt","r") as supp_f:
+#             for i in range(len(supp_list)):
+#                 if search_supp_code == supp_list[i][0]:
+#                     print("Old supplier code is: ",supp_list[0][1])
+#                     new_supp_code = int(input("Enter the new supplier code: "))
+#                     supp_list[i][0] = new_supp_code
+#                     supp_f.write(supp_list[i][0])
+inven_list = []
+user_list = []
+try:
+    # open and read the inventory file
+    with open("ppes.txt", "r") as inven_details_f:
+        ppe_data = inven_details_f.read(inven_list)
+        # if don't have inventory data
+        if not ppe_data:
+            print("Insert the item details")
+            initial_creation(inven_list, user_list)
+except:
+    print("Inventory file not found, auto create a file")
+    # open a inventory file
+    with open("ppes.txt", "a") as inven_details_f:
+        initial_creation(inven_list, user_list)
 
-getdata()
+def initial_creation(inven_list, user_list):
+    print("you're in initial creation now.")
+    while True:
+        item_code = input("Enter the item code: ")
+        item_name = input("Enter the item name: ")
+        item_quantity = 100
+        item_supp_name = input("Enter the item supplier: ")
+        item_supp_code = input("Enter the item supplier code: ")
+        details = str(item_code) + ":" + str(item_name) + ":" + str(item_quantity) + ":" + str(item_supp_name) + ":" + str(item_supp_code) + "\n"
+        with open("ppes.txt","a") as inven_details_f_read:
+            inven_details_f_read.write(details)
+            details = inven_list
+            choice = input("Did you finish input the details of the inventory (y/n)?")
+            if choice == "y":
+                main_login_page(user_list)
+                break
+            if choice == "n":
+                continue
