@@ -163,14 +163,30 @@ def search_quantity():
 
 
 def track_filter_date():
-    s_or_d_or_b = input('Please Enter Filter Type:\n'
-                        '"s" supply\n'
-                        '"d" distribute\n'
-                        '"b" both\n> ')
-    start_date_input = input('Please Enter Start Date with the format "yyyy:mm:dd"')
-    end_date_input = input('Please Enter End Date with the format "yyyy:mm:dd"')
-    start_date = datetime.datetime.strptime(start_date_input, "%Y:%m:%d")
-    end_date = datetime.datetime.strptime(end_date_input, "%Y:%m:%d")
+    s_or_d_or_b = input('\nPlease Enter Filter Type:\n'
+                        '"s" Supply\n'
+                        '"d" Distribute\n'
+                        '"b" Both\n> ')
+    if s_or_d_or_b.lower().strip() not in ['s', 'd', 'b']:
+        print("\nPlease Type In The Correct Format !\n")
+        confirm = input('"T" Type Again\n"R" Return To Main Menu\n>')
+        if confirm.upper().strip() == "T":
+            track_filter_date()
+        elif confirm.upper().strip() == "R":
+            main_menu()
+    try:
+        start_date_input = input('\nPlease Enter Start Date with the format "yyyy mm dd"\n>')
+        end_date_input = input('\nPlease Enter End Date with the format "yyyy mm dd"\n>')
+        start_date = datetime.datetime.strptime(start_date_input, "%Y %m %d")
+        end_date = datetime.datetime.strptime(end_date_input, "%Y %m %d")
+    except:
+        print('Sorry,I Dont Understand!\n Please Type with the format "yyyy mm dd" Ex:2023 10 01\n')
+        confirm = input('"T" Type Again\n"R" Return To Main Menu\n>')
+        if confirm.upper().strip() == "T":
+            track_filter_date()
+        elif confirm.upper().strip() == "R":
+            main_menu()
+
     with open('transaction.txt', "r") as file:
         for line in file:
             transaction_details = line.strip().split(',')
@@ -178,17 +194,23 @@ def track_filter_date():
             date_change = datetime.datetime.strptime(date_change, '%a %b %d %X %Y')
             if s_or_d_or_b == 's':
                 if s_or_d.strip() == 'supply':
-                    if start_date - datetime.timedelta(days=1) <= date_change <= end_date+datetime.timedelta(days=1):
-                        print(transaction_details)
+                    if start_date <= date_change <= end_date+datetime.timedelta(days=1):
+                        print(f'\nType:{s_or_d}\nItem Code:{item_code}\nSupplierCode:{supplier_code}'
+                              f'\nRemaining Quantity:{remaining_quantity}\nQuantity Change:{quantity_change}'
+                              f'\nDate:{date_change}\n')
             elif s_or_d_or_b == 'd':
                 if s_or_d.strip() == 'distribute':
-                    if start_date - datetime.timedelta(days=1) <= date_change <= end_date + datetime.timedelta(days=1):
-                        print(transaction_details)
+                    if start_date <= date_change <= end_date + datetime.timedelta(days=1):
+                        print(f'\nType:{s_or_d}\nItem Code:{item_code}\nSupplierCode:{supplier_code}'
+                              f'\nRemaining Quantity:{remaining_quantity}\nQuantity Change:{quantity_change}'
+                              f'\nDate:{date_change}\n')
             elif s_or_d_or_b =='b':
-                if start_date - datetime.timedelta(days=1) <= date_change <= end_date + datetime.timedelta(days=1):
-                    print(transaction_details)
-            else:
-                print('Sorry,I Dont Understand')
+                if start_date <= date_change <= end_date + datetime.timedelta(days=1):
+                    print(f'\nType:{s_or_d}\nItem Code:{item_code}\nSupplierCode:{supplier_code}'
+                          f'\nRemaining Quantity:{remaining_quantity}\nQuantity Change:{quantity_change}'
+                          f'\nDate:{date_change}\n')
+
+
 
 track_filter_date()
 
