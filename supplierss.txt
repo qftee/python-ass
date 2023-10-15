@@ -1,2 +1,5 @@
-a:a
-a:a
+sc1:s1
+sc2:s2
+sc3:s3
+sc4:s4
+sc6:s6

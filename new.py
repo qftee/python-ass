@@ -100,13 +100,13 @@ def add_user():
             user_f.write(user_details + "\n")
             ask = input("Did you finish add new user (y/n)?")
             if ask == "y":
-                # with open("users.txt", "a") as user_f:
+                # with open("users.txt", "aic") as user_f:
                 #     for user_rec in user_f:
                 #         rec = user_rec.strip().split(":")
                 #         user_list.append(rec)
                 user_list.append(user_details.split(":"))
-                search_function(user_list, inven_list)
-                break
+                main_login_
+                return
 
             if ask == "n":
                 user_list.append(user_details.split(":"))
