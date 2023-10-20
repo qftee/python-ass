@@ -463,7 +463,7 @@ def modify_supp(supp_list):
 def delete_supp(supp_list):
     print("Delete the supplier")
     search_supp_code = input("Enter the code you want to search: ")
-    with open("suppliers.txt","r") as supp_f:
+    with open("supplierss.txt","w") as supp_f:
         for i in range(len(supp_list)):
             if search_supp_code == supp_list[i][0]:
                 print("Supplier deleted")
@@ -475,13 +475,12 @@ def delete_supp(supp_list):
 def delete_user(user_list):
     print("Delete user page")
     search_user_ID = input("Enter the user id you want to search: ")
-    print(user_list)
-    with open("users.txt","a") as user_f:
+    with open("users.txt","w") as user_f:
         for i in range(len(user_list)):
             if search_user_ID == user_list[i][0]:
                 print("User Deleted")
             else:
-                user_f.write(":".join(user_list) + "\n")
+                user_f.write(":".join(user_list[i]) + "\n")
     # print("Delete user page")
     # search_userID = input("Enter the user id you want to search: ")
     # with open("users.txt","r") as user_f:
