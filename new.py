@@ -250,42 +250,34 @@
 #     if choice == "n":
 #     continue
 
-def supplier_list():
-    with open ("supplierss.txt","r") as file:
-        allrec = []
-        for line in file:
-            rec = line.strip().split(":")
-            allrec.append(rec)
-    num = 4 - len(allrec)
-    while num != 0:
-        print("Add new supplier")
-        print(allrec)
-        supp_code = input("Enter the supplier code: ")
-        supp_name = input("Enter the name of supplier:")
-        supp_details = str(supp_code) + ":" + str(supp_name)
-        num = num - 1
-        #if supp_code != rec[0]:
-        #else:
-            #print("Supplier have been taken")
-        choice = input("Did you finish input the details of the inventory (y/n)?")
-        if choice == "y":
-            break
-
-        if choice == "n":
-            with open("supplierss.txt", "a") as file:
-                file.write(supp_details + "\n")
-    print("supplier full")
-
-supplier_list()
-
-
+# def supplier_list():
+#     with open ("supplierss.txt","r") as file:
+#         allrec = []
+#         for line in file:
+#             rec = line.strip().split(":")
+#             allrec.append(rec)
+#     num = 4 - len(allrec)
+#     while num != 0:
+#         print("Add new supplier")
+#         print(allrec)
+#         supp_code = input("Enter the supplier code: ")
+#         supp_name = input("Enter the name of supplier:")
+#         supp_details = str(supp_code) + ":" + str(supp_name)
+#         num = num - 1
+#         #if supp_code != rec[0]:
+#         #else:
+#             #print("Supplier have been taken")
+#         choice = input("Did you finish input the details of the inventory (y/n)?")
+#         if choice == "y":
+#             break
+#
+#         if choice == "n":
+#             with open("supplierss.txt", "a") as file:
+#                 file.write(supp_details + "\n")
+#     print("supplier full")
+#
+# supplier_list()
     #if xxx == true, do y,else do z
-
-
-
-
-
-
     # for i in supp_list:
     #     if item_supp_code == i[0]:
     #         supp_code = True
@@ -297,3 +289,188 @@ supplier_list()
     #         supp_name = True
     #     else:
     #         supp_name = False
+def admin_menu(user_list, supp_list, inven_list):
+    while True:
+        print("Admin Menu")
+        print("1.  Add user")
+        print("2.  Modify user")
+        print("3.  Search Function")
+        print("4.  Supplier information")
+        print("5.  Delete user")
+        print("6.  Inventory In")
+        print("7.  Inventory Out")
+        print("8.  Summary Inventory")
+        print("9.  Search Items")
+        print("10. Exit")
+        choice = input("Enter your choice: ")
+        print("===="*30)
+        temp_list = []
+        with open("users.txt","r") as user_f:
+            lines = user_f.readlines()
+            for line in lines:
+                line = line.strip().split(":")
+                temp_list.append(line)
+        user_list = temp_list
+        print(user_list)
+        if choice == "1":
+            add_user(user_list)
+
+        if choice == "2":
+            modify_user(user_list)
+
+        if choice == "3":
+            search_function(user_list, inven_list)
+
+        if choice == "4":
+            supp_info(supp_list)
+
+        if choice == "5":
+            delete_user(user_list)
+
+        if choice == "6":
+            inventory_in(inven_list)
+
+        if choice == "7":
+            inventory_out(inven_list)
+
+        if choice == "8":
+            summary_inven(inven_list)
+
+        if choice == "9":
+            search_items(inven_list)
+
+        if choice == "10":
+            exit()
+def modify_user(user_list):
+    #print modify menu
+    print("Modify Page")
+    print("1. Change user name")
+    print("2. Change user password")
+    print("3. Change user Type")
+    # user need to do a option
+    choice = input("Enter your choice: ")
+
+
+    # temp_list = []
+    #012:ok:123:staff
+# 013:kl:456:admin
+# 017:lk:789:staff
+# 1234:lklo:4545:staff
+    # if the option is 1, will do a change name
+    if choice == "1":
+        print("Change user name page")
+        search_userID = input("Enter the user id you want to search:")
+        with open("users.txt","w") as user_f:
+            for i in user_list:
+            # print(i)
+                print(i)
+                if search_userID == i[0]:
+                    print("Old user name: ",i[1])
+                    new_name = input("Enter your new user name: ")
+                    # i[1] = new_name
+                    i[1] = new_name
+                    print("Name change successful..")
+                    # join ":" into the file to separate it.
+                    # user_f.write(":".join(user_list[i]) + "\n")
+
+                    user_f.write(":".join(i) + "\n")
+
+                    print(user_list)
+                # for i in range(len(user_list)):
+                else:
+                    user_f.write(":".join(i) + "\n")
+        return
+
+    if choice == "2":
+        print("Change user password.")
+        search_userID = input("Enter the userID you want to search: ")
+
+        with open("users.txt", "w") as user_f:
+            for i in user_list:
+                if search_userID == i[0]:
+                    old_pw = input("Enter your old password: ")
+                    if old_pw == i[2]:
+                        new_pw = input("Enter your new password: ")
+                        i[2] = new_pw
+                        # user_list = temp_list
+                        print("Password change successful....")
+                        user_f.write(":".join(i) + "\n")
+                    else:
+                        user_f.write(":".join(i) + "\n")
+                else:
+                    user_f.write(":".join(i) + "\n")
+
+
+    if choice == "3":
+        print("Change user Type.")
+        search_userID = input("Enter the userID you want to search: ")
+        with open("users.txt","w") as user_f:
+            for i in user_list:
+                if search_userID == i[0]:
+                    print("The user type for this user ID is: ",i[3])
+                    if i[3] == "staff":
+                        new_type = "admin"
+                        i[3] = new_type
+                        user_f.write(":".join(i) + "\n")
+                        print("User type change successfully to admin....")
+
+                    elif i[3] == "admin":
+                        new_type = "staff"
+                        i[3] = new_type
+                        user_f.write(":".join(i) + "\n")
+                        print("User type change successfully to staff....")
+                else:
+                    print("The userID does not match and the user type cannot be changed.")
+                    user_f.write(":".join(i) + "\n")
+# def change_user(user_list):
+#     print("Change user name page")
+#     search_userID = input("Enter the user id you want to search:")
+#     temp_list = []
+#     with open("users.txt","w") as user_f:
+#         for i in user_list:
+#             i = i.strip().split(":")
+#             temp_list.append(i)
+#             print(temp_list)
+#         # print(i)
+#             if search_userID == i[0]:
+#                 print("Old user name: ",i[1])
+#                 new_name = input("Enter your new user name: ")
+#                 # i[1] = new_name
+#                 i[1] = new_name
+#                 print("Name change successful..")
+#                 # join ":" into the file to separate it.
+#                 # user_f.write(":".join(user_list[i]) + "\n")
+#
+#                 user_f.write(":".join(i) + "\n")
+#                 user_list = temp_list
+#                 print(user_list)
+#             # for i in range(len(user_list)):
+#             else:
+#                 user_f.write(":".join(i) + "\n")
+#     change_pw()
+# def change_pw():
+#     print("Change user password.")
+#     search_userID = input("Enter the userID you want to search: ")
+#     with open("users.txt", "w+") as user_f:
+#         for i in user_list:
+#             # print(i)
+#             i = i.strip().split(":")
+#             if search_userID == i[0]:
+#                 old_pw = input("Enter your old password: ")
+#                 if old_pw == i[2]:
+#                     new_pw = input("Enter your new password: ")
+#                     i[2] = new_pw
+#                     print("Password change successful....")
+#                     user_f.write(":".join(i) + "\n")
+#                 else:
+#                     user_f.write(":".join(i) + "\n")
+#             else:
+#                 user_f.write(":".join(i) + "\n")
+supp_list = []
+inven_list = []
+user_list = []
+with open("users.txt", "r") as user_f:
+    for line in user_f:
+        line = line.strip().strip(":")
+        user_list.append(line)
+admin_menu(user_list, supp_list, inven_list)
