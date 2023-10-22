@@ -1,0 +1,11 @@
+PH:Pantai Hospital:0126532986:pantaihosp@yahoo.com
+SH:Subang Hospital:0136258495:shosp@mail.com
+SMC:Subang Medical Centre:0162543628:smc@email.com
+PH:Pantai Hospital:0126532986:pantaihosp@yahoo.com
+SH:Subang Hospital:0136258495:shosp@mail.com
+SMC:Subang Medical Centre:0162543628:smc@email.com
+HM:Makhota Hospital:0195263452:makhosp@yahoo.com
+PH:Pantai Hospital:0126532986:pantaihosp@yahoo.com
+SH:Subang Hospital:0136258495:shosp@mail.com
+SMC:Subang Medical Centre:0162543628:smc@email.com
+HM:Makhota Hospital:0195263452:makhosp@yahoo.com

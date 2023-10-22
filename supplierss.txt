@@ -1,0 +1,4 @@
+PH:Pantai Hospital:0126532986:pantaihosp@yahoo.com
+SH:Subang Hospital:0136258495:shosp@mail.com
+SMC:Sub Med Cen:0162543628:smc@email.com
+MH:Makhota Hospital:0195263452:makhosp@yahoo.com

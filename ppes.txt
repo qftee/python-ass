@@ -1,4 +1,0 @@
-hc:head cover:100:s1:sc1
-mask:ms:100:s2:sc2
-hi:hi:100:hi:hi
-hi:hi:100:hi:hi
