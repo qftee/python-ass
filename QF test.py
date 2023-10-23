@@ -49,12 +49,12 @@ except FileNotFoundError:
 
 
 def create_items():
-    hc = f'HC,QFSB,100,{date_time()},{date_time()}'
-    fs = f'FS,JQSB,100,{date_time()},{date_time()}'
-    ms = f'MS,JQSB,100,{date_time()},{date_time()}'
-    gl = f'GL,QFSB,100,{date_time()},{date_time()}'
-    gw = f'GW,PYSB,100,{date_time()},{date_time()}'
-    sc = f'SC,PYSB,100,{date_time()},{date_time()}'
+    hc = f'HC,Head Cover,QFSB,100,{date_time()},{date_time()}'
+    fs = f'FS,Face Shield,JQSB,100,{date_time()},{date_time()}'
+    ms = f'MS,Mask,JQSB,100,{date_time()},{date_time()}'
+    gl = f'GL,Gloves,QFSB,100,{date_time()},{date_time()}'
+    gw = f'GW,Gown,PYSB,100,{date_time()},{date_time()}'
+    sc = f'SC,Shoe Cover,PYSB,100,{date_time()},{date_time()}'
     with open('ppe.txt', 'w') as create_item:
         create_item.write(hc + '\n')
         create_item.write(fs + '\n')
@@ -98,20 +98,20 @@ def supply_or_distribute(s_or_d):
                 item_found = True
                 print(item)
                 item_info = item.strip().split(',')
-                item_code, item_supplier, item_quantity, last_supply_date, last_distribute_date = item_info
-                item_quantity = int(item_info[2])
+                item_code, item_name, item_supplier, item_quantity, last_supply_date, last_distribute_date = item_info
+                item_quantity = int(item_info[3])
                 check_again = input(f'The remaining quantity is "{item_quantity}" boxes,\n'
                                     f'Are you sure want to {"add" if s_or_d == "supply" else "distribute"} '
                                     f'it ? \nYes(Y)  No(N)\n>')
                 quantity_changes = int(input('Quantity(Boxes):'))
                 if check_again.upper() == 'Y':
-                    item_info[2] = str(item_quantity + quantity_changes) if s_or_d == 'supply' else str(
+                    item_info[3] = str(item_quantity + quantity_changes) if s_or_d == 'supply' else str(
                         item_quantity - quantity_changes)
-                    item_info[3 if s_or_d == 'supply' else 4] = date_time()
+                    item_info[4 if s_or_d == 'supply' else 5] = date_time()
                     print('Item Successfully Updated!')
                     with open('transaction.txt', 'a') as trans:
                         trans.write(f'{"supply" if s_or_d == "supply" else "distribute"}'
-                                    f',{item_code},{item_supplier},{item_info[2]},{quantity_changes},{date_time()}\n')
+                                    f',{item_code},{item_name},{item_supplier},{item_info[3]},{quantity_changes},{date_time()}\n')
                 elif check_again.upper() == 'N':
                     print('Item Update Failed!')
 
@@ -127,24 +127,26 @@ def supply_or_distribute(s_or_d):
 
 def display_inventory_quantity():
     all_record = []
+    count = 0
     with open('ppe.txt', 'r') as list:
         for line in list:
             all_record.append(line.strip().split(','))
-    for x in range(len(all_record)-1):
-        for y in range(x, len(all_record)):
-            if all_record[x][0] > all_record[y][0]:
-                temp = all_record[x]
-                all_record[x] = all_record[y]
-                all_record[y] = temp
+        for x in range(len(all_record)-1):
+            for y in range(x, len(all_record)):
+                if int(all_record[x][3]) > int(all_record[y][3]):
+                    temp = all_record[x]
+                    all_record[x] = all_record[y]
+                    all_record[y] = temp
     for i in range(len(all_record)):
-        print(f'{all_record[i][0]}: Available Quantity:{all_record[i][2]} boxes ')
+        print(f'Item Code:{all_record[i][0]}           Item Name:{all_record[i][1]}           Supplier Code:{all_record[i][2]}            Quantity:{all_record[i][3]} boxes \n'
+              f'Last Supply Date:{all_record[i][4]}         Last Distribute Date:{all_record[i][5]}\n')
 
 
 def less_25():
     with open('ppe.txt', 'r') as check:
         for line in check:
             item = line.strip().split(',')
-            item_code, item_name, item_quantity, last_supply_date, last_distribute_date = item
+            item_code, item_name,supplier_code, item_quantity, last_supply_date, last_distribute_date = item
             if int(item_quantity) < 25:
                 print(f"{item_code}'s quantity is below 25 boxes,\n"
                       f"The Remaining quantity is {item_quantity}\n")
@@ -156,7 +158,7 @@ def search_quantity():
     with open('ppe.txt', 'r') as file:
         for line in file:
             item = line.strip().split(',')
-            item_code, item_name, item_quantity, last_supply_date, last_distribute_date = item
+            item_code, item_name, supplier_code, item_quantity, last_supply_date, last_distribute_date = item
             if item_search.upper().strip() == item_code.strip():
                 print(f'The Available Quantity for {item_code} is {item_quantity} boxes\n')
 
@@ -209,10 +211,6 @@ def track_filter_date():
                     print(f'\nType:{s_or_d}\nItem Code:{item_code}\nSupplierCode:{supplier_code}'
                           f'\nRemaining Quantity:{remaining_quantity}\nQuantity Change:{quantity_change}'
                           f'\nDate:{date_change}\n')
-
-
-
-track_filter_date()
 
 
 
