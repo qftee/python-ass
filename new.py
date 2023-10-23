@@ -480,13 +480,9 @@ def add_user(user_list):
             for lines in user_read:
                 line = lines.strip().split(":")
                 user_list.append(line)
-            print(line)
         with open("users.txt","a") as user_f:
             print(user_list)
             for i in user_list:
-                print(i)
-                print(user_ID)
-                print(i[0])
                 if user_ID == i[0]:
                     same_ID = True
                     print("User ID have been used, please change another.")
