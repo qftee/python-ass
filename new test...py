@@ -172,11 +172,7 @@ def admin_menu(user_list, supp_list, inven_list):
             exit()
 
 def add_user(user_list):
-    # with open("users.txt", "r") as user_f:
-    #     for user_rec in user_f:
-    #         rec = user_rec.strip().split(":")
-    #         user_list.append(rec)
-    print(user_list)
+    same_ID = False
     while True:
         print("Add user page.")
         user_ID = input("Enter the user ID: ")
@@ -186,22 +182,36 @@ def add_user(user_list):
         user_details = str(user_ID) + ":" + str(user_name) + ":" + str(user_pw) + ":" + str(user_type).lower()
         # user_list.append(user_details)
         with open("users.txt","a") as user_f:
-            user_f.write(user_details + "\n")
-            ask = input("Did you finish add new user (y/n)?")
-            print("---"*30)
+            print(user_list)
+            for i in range(len(user_list)):
+                print(user_ID)
+                print(user_list[i][0])
+                if user_ID == user_list[i][0]:
+                    print("User ID have been used, please change another.")
+                    # ask = input("Did you finish add new user (y/n)?")
+                    # print("---" * 30)
+                    # if ask == "y":
+                    #     break
+                    # if ask == "n":
+                    #     continue
+                    # ask = input("Did you finish add new user (y/n)?")
+                    # print("---" * 30)
+                    # if ask == "y":
+                    #     break
+                    # if ask == "n":
+                    #     continue
 
-            if ask == "y":
-                # with open("users.txt", "a") as user_f:
-                #     for user_rec in user_f:
-                #         rec = user_rec.strip().split(":")
-                #         user_list.append(rec) .split(":")
-                user_list.append(user_details)
-                break
+                else:
+                    user_f.write(user_details + "\n")
+        ask = input("Did you finish add new user (y/n)?")
+        print("---"*30)
 
-
-            if ask == "n":
-                user_list.append(user_details)
-                continue
+        if ask == "y":
+            user_list.append(user_details)
+            break
+        if ask == "n":
+            user_list.append(user_details)
+            continue
 
 
 def modify_user(user_list):
