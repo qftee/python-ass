@@ -65,64 +65,167 @@ def create_items():
 
 
 def update_inventory():
-    try:
-        how_to_manage = int(input('"1" Supply \n"2" Distribute \n"3" Main Menu \n>'))
-        if how_to_manage == 1:
-            supply_or_distribute('supply')
+    how_to_manage = int(input('"1" Supply \n"2" Distribute \n"3" Main Menu \n>'))
+    if how_to_manage == 1:
+        supply()
+    elif how_to_manage == 2:
+        distribute()
+    elif how_to_manage == 3:
+        main_menu()
 
-        elif how_to_manage == 2:
-            supply_or_distribute('distribute')
-
-        elif how_to_manage == 3:
-            main_menu()
-
-            print("Sorry, I don't understand")
-            update_inventory()
-    except Exception as e:
-        print("An error occurred:", e)
+        print("Sorry, I don't understand")
+        update_inventory()
 
 
-def supply_or_distribute(s_or_d):
+
+def supply():
     item_change = input('Item code:')
     item_change = item_change.upper().strip()
     count = 0
     item_found = False
-    with open('ppe.txt', 'r') as edit_quantity:
-        lines = edit_quantity.readlines()
-        code_quantity = len(lines)
-
-    with open('ppe.txt', 'w') as edit_quantity:
-        for item in lines:
+    with open('ppe.txt', 'r') as file_line:
+        line = len(file_line.readlines())
+    with open('ppe.txt', 'r') as check:
+        for items in check:
             count += 1
-            if item.startswith(item_change):
-                item_found = True
-                print(item)
-                item_info = item.strip().split(',')
-                item_code, item_name, item_supplier, item_quantity, last_supply_date, last_distribute_date = item_info
-                item_quantity = int(item_info[3])
-                check_again = input(f'The remaining quantity is "{item_quantity}" boxes,\n'
-                                    f'Are you sure want to {"add" if s_or_d == "supply" else "distribute"} '
-                                    f'it ? \nYes(Y)  No(N)\n>')
-                quantity_changes = int(input('Quantity(Boxes):'))
-                if check_again.upper() == 'Y':
-                    item_info[3] = str(item_quantity + quantity_changes) if s_or_d == 'supply' else str(
-                        item_quantity - quantity_changes)
-                    item_info[4 if s_or_d == 'supply' else 5] = date_time()
-                    print('Item Successfully Updated!')
-                    with open('transaction.txt', 'a') as trans:
-                        trans.write(f'{"supply" if s_or_d == "supply" else "distribute"}'
-                                    f',{item_code},{item_name},{item_supplier},{item_info[3]},{quantity_changes},{date_time()}\n')
-                elif check_again.upper() == 'N':
-                    print('Item Update Failed!')
+            if items.startswith(item_change):
+                items = items.strip().split(',')
+                print(
+                    f'Item Code:{items[0]}   Item Name:{items[1]}   Item Quantity:{items[2]}    Supply Code:{items[3]}    '
+                    f'Last Supply Date:{items[4]}\n')
+                confirm = input('Is This Item Detail Correct? Y/N:')
+                if confirm.upper().strip() == 'Y':
+                    item_found = True
+                    continue
+                elif confirm.upper().strip() == 'N':
+                    confirm2 = input('1. Type Again\n2.Return To Main Menu\n>')
+                    if confirm2.strip() == '1':
+                        supply()
+                    elif confirm2.strip() == '2':
+                        pass
+            elif count >= 6 and not item_found:
+                print('Items Not Found')
+                confirm3 = input('1. Type Again\n2.Return To Main Menu\n>')
+                if confirm3.strip() == '1':
+                    supply()
+                elif confirm3.strip() == '2':
+                    pass
 
-                edit_quantity.write(','.join(item_info) + "\n")
+    if item_found:
+        with open('ppe.txt', 'r') as edit_quantity:
+            lines = edit_quantity.readlines()
 
-            else:
-                edit_quantity.write(item)
-                if count == code_quantity and item_found:
-                    break
-                if count == code_quantity and not item.startswith(item_change):
-                    print('Item Not Found!')
+        with open('ppe.txt', 'w') as edit_quantity:
+            for item in lines:
+                if item.startswith(item_change):
+                    print(item)
+                    item_info = item.strip().split(',')
+                    item_code, item_name, item_supplier, item_quantity, last_supply_date, last_distribute_date = item_info
+                    item_quantity = int(item_info[3])
+                    check_again = input(f'The remaining quantity is "{item_quantity}" boxes,'
+                                        f'\nAre you sure want to supply? \nYes(Y)  No(N)\n>')
+                    if check_again.upper() == 'Y':
+                        quantity_changes = int(input('Quantity(Boxes):'))
+                        item_info[3] = str(item_quantity + quantity_changes)
+                        item_info[5] = date_time()
+                        print(f'After Update...\n'
+                              f'Item Code:{item_code}   Item Name:{item_name}   Item Quantity:{item_info[3]}    '
+                              f'Last Supply Date:{item_info[5]}\n')
+                        print('Item Successfully Updated!')
+                        with open('transaction.txt', 'a') as trans:
+                            trans.write(f'{"supply"}'
+                                        f',{item_code},{item_supplier},{item_info[2]},{quantity_changes},{date_time()}\n')
+                    elif check_again.upper() == 'N':
+                        print('Item Update Failed!')
+
+                    edit_quantity.write(','.join(item_info) + "\n")
+
+                else:
+                    edit_quantity.write(item)
+
+
+def distribute():
+    item_change = input('Item code:')
+    item_change = item_change.upper().strip()
+    count = 0
+    item_found = False
+    with open('ppe.txt', 'r') as file_line:
+        line = len(file_line.readlines())
+    with open('ppe.txt', 'r') as check:
+        for items in check:
+            count += 1
+            if items.startswith(item_change):
+                items = items.strip().split(',')
+                print(f'Item Code:{items[0]}   Item Name:{items[1]}   Item Quantity:{items[2]}    '
+                      f'Last Distribute Date:{items[5]}\n')
+                confirm = input('Is This Item Detail Correct? Y/N:')
+                if confirm.upper().strip() == 'Y':
+                    item_found = True
+                    continue
+                elif confirm.upper().strip() == 'N':
+                    confirm2 = input('1. Type Again\n2.Return To Main Menu\n>')
+                    if confirm2.strip() == '1':
+                        distribute()
+                    elif confirm2.strip() == '2':
+                        main_menu()
+            elif count >= 6 and not item_found:
+                print('Items Not Found')
+                confirm3 = input('1. Type Again\n2.Return To Main Menu\n>')
+                if confirm3.strip() == '1':
+                    distribute()
+                elif confirm3.strip() == '2':
+                    pass
+    if item_found:
+        hospital_code = input('Please Type The Hospital Code:')
+        hospital_code = hospital_code.upper().strip()
+        hospital_found = False
+        with open('hospital.txt', 'r') as check:
+            for hospitals_line in check:
+                if hospitals_line.startswith(hospital_code):
+                    hospitals_line = hospitals_line.strip().split(',')
+                    print(f'Hospital Code:{hospitals_line[0]}   Hospital Name:{hospitals_line[1]}   '
+                          f'Last Distribute Date:{hospitals_line[3]}\n')
+                    confirm = input('Is This Hospital Detail Correct? Y/N:')
+                    if confirm.upper().strip() == 'Y':
+                        hospital_found = True
+                        continue
+                    elif confirm.upper().strip() == 'N':
+                        confirm2 = input('1. Type Again\n2.Return To Main Menu\n>')
+                        if confirm2.strip() == '1':
+                            distribute()
+                        elif confirm2.strip() == '2':
+                            main_menu()
+    if item_found and hospital_found:
+        with open('ppe.txt', 'r') as edit_quantity:
+            lines = edit_quantity.readlines()
+
+        with open('ppe.txt', 'w') as edit_quantity:
+            for item in lines:
+                if item.startswith(item_change):
+                    print(item)
+                    item_info = item.strip().split(',')
+                    item_code, item_name, item_supplier, item_quantity, last_supply_date, last_distribute_date = item_info
+                    item_quantity = int(item_info[3])
+                    check_again = input(f'The remaining quantity is "{item_quantity}" boxes,'
+                                        f'\nAre you sure want to distribute ? \nYes(Y)  No(N)\n>')
+                    if check_again.upper() == 'Y':
+                        quantity_changes = int(input('Quantity(Boxes):'))
+                        item_info[3] = str(item_quantity - quantity_changes)
+                        item_info[5] = date_time()
+                        print(f'After Update...\n'
+                              f'Item Code:{item_code}   Item Name:{item_name}   Item Quantity:{item_info[3]}    '
+                              f'Last Distribute Date:{item_info[5]}\n')
+                        print('Item Successfully Updated!')
+                        with open('transaction.txt', 'a') as trans:
+                            trans.write(f'{"distribute"}'
+                                        f',{item_code},{hospital_code},{item_info[2]},{quantity_changes},{date_time()}\n')
+                    elif check_again.upper() == 'N':
+                        print('Item Update Failed!')
+
+                    edit_quantity.write(','.join(item_info) + "\n")
+                else:
+                    edit_quantity.write(item)
+
 
 
 def display_inventory_quantity():
@@ -146,7 +249,7 @@ def less_25():
     with open('ppe.txt', 'r') as check:
         for line in check:
             item = line.strip().split(',')
-            item_code, item_name,supplier_code, item_quantity, last_supply_date, last_distribute_date = item
+            item_code, item_name, supplier_code, item_quantity, last_supply_date, last_distribute_date = item
             if int(item_quantity) < 25:
                 print(f"{item_code}'s quantity is below 25 boxes,\n"
                       f"The Remaining quantity is {item_quantity}\n")
@@ -213,8 +316,8 @@ def track_filter_date():
                           f'\nDate:{date_change}\n')
 
 
-
-
+create_items()
+update_inventory()
 
 
 

@@ -18,11 +18,10 @@ def open_file():
     try:
         supplier = True
         inventory = True
-        with open("suppliers.txt", "r") as supp_file:
-            supp_data = supp_file.read
+        with open("suppliers.txt", "r") as supp_data:
             if supp_data == '':
                 supplier = False
-            for line in supp_file:
+            for line in supp_data:
                 supp_list.append(line)
 
         with open("ppe.txt", "r") as ppe_file:
@@ -32,16 +31,13 @@ def open_file():
             if not ppe_data:
                 inventory = False
 
-        with open("users.txt", "r") as user_file:
-            user_data = user_file.read
+        with open("users.txt", "r") as user_data:
             if user_data == '':
                 add_user(user_list)
-            for line in user_file:
+            for line in user_data:
                 line = line.strip().strip(":")
                 user_list.append(line)
         # create a empty file
-        if not supplier or not inventory:
-            initial_creation()
         main_login_page(user_list, supp_list, inven_list)
 
     except FileNotFoundError:
