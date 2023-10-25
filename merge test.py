@@ -14,80 +14,97 @@ def open_file():
     user_list = []
     supp_list = []
     inven_list = []
+    supplier = True
+    inventory = True
     # Open and read the inventory file.
     try:
-        supplier = True
-        inventory = True
-        with open("suppliers.txt", "r") as supp_data:
-            if supp_data == '':
+        with open("suppliers.txt", "r") as supp_file:
+            if not supp_file.read():  # Check if the file is empty
                 supplier = False
-            for line in supp_data:
-                supp_list.append(line)
-
-        with open("ppe.txt", "r") as ppe_file:
-            ppe_data = ppe_file.readline()
-            for line in ppe_data:
-                inven_list.append(line)
-            if not ppe_data:
-                inventory = False
-
-        with open("users.txt", "r") as user_data:
-            if user_data == '':
-                add_user(user_list)
-            for line in user_data:
-                line = line.strip().strip(":")
-                user_list.append(line)
-        # create a empty file
-        main_login_page(user_list, supp_list, inven_list)
+            else:
+                supp_file.seek(0)  # Reset the file pointer to the beginning
+                for line in supp_file:
+                    supp_list.append(line.strip())
 
     except FileNotFoundError:
         with open("suppliers.txt", "a") as supp_data:
             # supp_info(supp_list)
             supp_data.write("")
+            supplier = False
 
-        with open("users.txt", "r") as user_data:
-            for line in user_data:
-                line = line.strip().split(":")
-                user_list.append(line)
+    try:
+        with open("ppe.txt", "r") as ppe_file:
+            if not ppe_file.read():
+                inventory = False
+            else:
+                ppe_file.seek(0)
+                for line in ppe_file:
+                    inven_list.append((line.strip()))
 
+    except FileNotFoundError:
         with open("ppe.txt", "a") as ppe_data:
-            print("Insert the item details")
-            initial_creation()
-            main_login_page(user_list, supp_list, inven_list)
+            inventory = False
+            opening_cover()
+            main_login_page(user_list, supp_list, inven_list, supplier, inventory)
+
+    try:
+        with open("users.txt", "r") as user_file:
+            user_data = user_file.read
+            if user_data == '':
+                add_user(user_list)
+            for line in user_file:
+                line = line.strip().strip(":")
+                user_list.append(line)
+        # create a empty file
+
+    except FileNotFoundError:
+        with open("users.txt", "w") as user_data:
+            user_data.write(' ')
+            add_user(user_list)
+    opening_cover()
+    main_login_page(user_list, supp_list, inven_list, supplier, inventory)
 
 
-def initial_creation():
+def initial_creation(user_login, admin_login, staff_login, user_list, supp_list, inven_list):
     print("You're In Initial Creation Now")
     while True:
         supp_exist = False
+        item_exist = False
         item_code = input("Enter the item code: ").strip().upper()
         item_name = input("Enter the item name: ").strip().upper()
         item_last_supply_date = date_time()
         item_last_distribute_date = date_time()
-        item_supp_name = input("Enter the item supplier: ").strip().upper()
+        item_supp_name = input("Enter the item supplier name: ").strip().upper()
         item_supp_code = input("Enter the item supplier code: ").strip().upper()
         supp_contact_number = input("Enter the phone number of the supplier: ").strip()
-        supp_email = input("Enter the mail box of the supplier: ").strip()
-        item_details = f'{item_code}:{item_name}:{item_supp_code}:100:{item_last_supply_date}:{item_last_distribute_date}'
-        supp_details = f'{item_supp_code}:{item_supp_name}:{supp_contact_number}:{supp_email}:{item_last_supply_date}'
+        supp_email = input("Enter the e-mail of the supplier: ").strip()
+        item_details = f'{item_code},{item_name},{item_supp_code},100,{item_last_supply_date},{item_last_distribute_date}'
+        supp_details = f'{item_supp_code},{item_supp_name},{supp_contact_number},{supp_email},{item_last_supply_date}'
         # will be empty after rerun the loop
 
         with open("suppliers.txt", "r") as read_supp:
-            suppliers_quantity = read_supp.readlines()
-        for i in suppliers_quantity:
-            i = i.replace("\n", "").split(":")
-            if item_supp_code == i[0] and item_supp_name == i[1]:
+            lines = read_supp.readlines()
+        for convert in lines:
+            supp_detail = convert.replace("\n", "").split(":")
+            if item_supp_code == supp_detail[0] and item_supp_name == supp_detail[1]:
                 supp_exist = True
+
+        with open('ppe.txt', 'r') as read_inventory:
+            lines = read_inventory.readlines()
+        for convert in lines:
+                item_detail = convert.replace("\n", "").split(":")
+                if item_code == item_detail[0] and item_name == item_detail[1]:
+                    item_exist = True
 
             # xxx=true
             # for check, if xxx = true, else xxx = false
-        if supp_exist:
+        if supp_exist and not item_exist:
             with open("ppe.txt", "a") as ppe_data:
                 # inven_list.append(item_details)
                 ppe_data.write(item_details + "\n")
             print("Same supplier, add inventory only")
-        elif not supp_exist:
-            if len(suppliers_quantity) < 4:
+        elif not supp_exist and not item_exist:
+            if len(lines) < 4:
                 with open("ppe.txt", "a") as ppe_data:
                     # inven = item_details.strip().split(":")
                     ppe_data.write(item_details + "\n")
@@ -96,21 +113,36 @@ def initial_creation():
                     # supp = supp_details.strip().split(":")
                     supp_f.write(supp_details + "\n")
                     # supp_list.append(supp_details)
-            elif len(suppliers_quantity) >= 4:
+            elif len(lines) >= 4:
                 print("Supplier full")
 
         choice = input("Did you finish input the details of the inventory (y/n)?")
         if choice == "y":
-            break
-            open_file()
+            if user_login and staff_login:
+                print("Successfully entered staff page.")
+                staff_menu(inven_list)
+            elif user_login and admin_login:
+                print("Successfully entered admin page.")
+                admin_menu(user_list, supp_list, inven_list)
         if choice == "n":
             continue
+def opening_cover():
+    print("=" * 35)
+    print("        Department Of Health       ")
+    print("  Inventory Management System For  ")
+    print("Personal Protective Equipment (PPE)")
+    print("=" * 35)
 
 
-def main_login_page(user_list, supp_list, inven_list):
+def main_login_page(user_list, supp_list, inven_list, supplier, inventory):
+
     user_login = False
-    user_id = input("Enter your user ID: ")
-    user_pw = input("Enter your password: ")
+    admin_login = False
+    staff_login = False
+    print('Login Page')
+    print('-'*30)
+    user_id = input("Enter your user ID: ").strip().lower()
+    user_pw = input("Enter your password: ").strip()
 
     for i in user_list:
         user_info = i.strip("\n").split(":")
@@ -119,19 +151,30 @@ def main_login_page(user_list, supp_list, inven_list):
             break
 
     if user_login:
-        # user_list[i][3].lower("admin")
-        if user_info[3] == "admin":
-            print("Successfully entered admin page.")
-            admin_menu(user_list, supp_list, inven_list)
+        if not supplier or not inventory:
+            if user_info[3] == "admin":
+                admin_login = True
 
-        if user_info[3] == "staff":
-            print("Successfully entered staff page.")
-            staff_menu(inven_list)
-        return
+                initial_creation(user_login, admin_login, staff_login, user_list, supp_list, inven_list)
+
+            elif user_info[3] == "staff":
+                staff_login = True
+
+                initial_creation(user_login, admin_login, staff_login, user_list, supp_list, inven_list)
+        else:
+            if user_info[3] == "admin":
+                print("Successfully entered admin page.")
+                admin_menu(user_list, supp_list, inven_list)
+
+            elif user_info[3] == "staff":
+                print("Successfully entered staff page.")
+                staff_menu(inven_list)
+
+
     else:
         print("Logged in unsuccessful..")
-        return
-
+        print('Please Type Again')
+        main_login_page(user_list, supp_list, inven_list, supplier, inventory)
 
 def admin_menu(user_list, supp_list, inven_list):
     while True:

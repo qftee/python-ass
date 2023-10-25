@@ -113,10 +113,11 @@ def main_login_page(user_list, supp_list, inven_list):
         if a[3] == "staff":
             print("Successfully entered staff page.")
             staff_menu(inven_list)
-        return
+
     else:
         print("Logged in unsuccessful..")
-        return
+        print('Please Type Again')
+        main_login_page(user_list, supp_list, inven_list)
 
 def admin_menu(user_list, supp_list, inven_list):
     while True:

@@ -19,18 +19,20 @@ def open_file():
         supplier = True
         inventory = True
         with open("suppliers.txt", "r") as supp_file:
-            supp_data = supp_file.read
-            if supp_data == '':
+            if not supp_file.read():  # Check if the file is empty
                 supplier = False
-            for line in supp_file:
-                supp_list.append(line)
+            else:
+                supp_file.seek(0)  # Reset the file pointer to the beginning
+                for line in supp_file:
+                    supp_list.append(line.strip())
 
         with open("ppe.txt", "r") as ppe_file:
-            ppe_data = ppe_file.readline()
-            for line in ppe_data:
-                inven_list.append(line)
-            if not ppe_data:
+            if not ppe_file.read():
                 inventory = False
+            else:
+                ppe_file.seek(0)
+                for line in ppe_file:
+                    inven_list.append((line.strip()))
 
         with open("users.txt", "r") as user_file:
             user_data = user_file.read
@@ -321,7 +323,7 @@ def search_function(user_list, inven_list):
 
 
 def search_user(user_list):
-    userfound = False
+    user_found = False
     print("Search user page")
     print(user_list)
     search_userID = input("Enter the user ID you want to search: ")
@@ -330,8 +332,8 @@ def search_user(user_list):
         # read = user_read.read()
         for i in user_list:
             if search_userID == i[0]:
-                userfound = True
-                if userfound == True:
+                user_found = True
+                if user_found:
                     print("User ID: ", i[0])
                     print("User name: ", i[1])
                     print("User password: ", i[2])
