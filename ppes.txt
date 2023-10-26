@@ -1,6 +1,1 @@
-HC:Head Cover:100:Pantai Hospital:PH
-FS:Face Shield:100:Subang Hospital:SH
-MS:Mask:100:Subang Medical Centre:SMC
-GL:Gloves:100:Makhota Hospital:MH
-GW:Gown:100:Pantai Hospital:PH
-SC:Shoe Covers:100:Subang Hospital:SH
+hc:head cover:100:Pantai Hospital:PH
