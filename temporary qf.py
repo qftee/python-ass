@@ -25,13 +25,12 @@ def check_file():
                 hospital_list.append(line.strip())
 
     except FileNotFoundError:
-        with open("suppliers.txt", "a") as supp_data:
-            # supp_info(supplier_list)
-            supp_data.write("")
+        with open("hospital.txt", "a") as hospital_data:
+            hospital_data.write("")
 
     try:
         with open("suppliers.txt", "r") as supp_file:
-            if not supp_file.read():  # Check if the file is empty
+            if not supp_file.read(): # Check if the file is empty
                 supplier = False
             else:
                 supp_file.seek(0)  # Reset the file pointer to the beginning
@@ -54,7 +53,8 @@ def check_file():
                     inventory_list.append((line.strip()))
 
     except FileNotFoundError:
-        with open("ppe.txt", "a") as ppe_data:
+        with open("ppe.txt", "a") as ppe_file:
+            ppe_file.write(' ')
             inventory = False
             opening_cover()
             main_login_page(user_list, supplier_list, inventory_list, hospital_list, supplier, inventory)
@@ -63,16 +63,16 @@ def check_file():
         with open("users.txt", "r") as user_file:
             user_data = user_file.read
             if user_data == '':
-                add_user(user_list)
+                add_user(user_list, supplier_list, inventory_list, hospital_list)
             for line in user_file:
-                line = line.strip().strip(":")
+                line = line.strip().split(":")
                 user_list.append(line)
         # create a empty file
 
     except FileNotFoundError:
         with open("users.txt", "w") as user_data:
             user_data.write(' ')
-            add_user(user_list)
+            add_user(user_list, supplier_list, inventory_list, hospital_list)
     opening_cover()
     main_login_page(user_list, supplier_list, inventory_list, hospital_list, supplier, inventory)
 
@@ -152,7 +152,6 @@ def initial_creation(user_login, admin_login, staff_login, user_list, supplier_l
         get_choice()
 
 
-
 def opening_cover():
     print("=" * 35)
     print("        Department Of Health       ")
@@ -161,7 +160,7 @@ def opening_cover():
     print("=" * 35)
 
 
-def main_login_page(user_list, supplier_list, inventory_list, supplier, inventory, hospital_list):
+def main_login_page(user_list, supplier_list, inventory_list, hospital_list, supplier, inventory):
 
     user_login = False
     admin_login = False
@@ -171,22 +170,20 @@ def main_login_page(user_list, supplier_list, inventory_list, supplier, inventor
     user_id = input("Enter your user ID: ").strip().lower()
     user_pw = input("Enter your password: ").strip()
 
-    for i in user_list:
-        user_info = i.strip("\n").split(":")
+    for user_info in user_list:
         if user_id == user_info[0] and user_pw == user_info[2]:
             user_login = True
             break
 
     if user_login:
+
         if not supplier or not inventory:
             if user_info[3] == "admin":
                 admin_login = True
-
                 initial_creation(user_login, admin_login, staff_login, user_list, supplier_list, inventory_list, hospital_list)
-
+                print('hi')
             elif user_info[3] == "staff":
                 staff_login = True
-
                 initial_creation(user_login, admin_login, staff_login, user_list, supplier_list, inventory_list, hospital_list)
         else:
             if user_info[3] == "admin":
@@ -199,7 +196,7 @@ def main_login_page(user_list, supplier_list, inventory_list, supplier, inventor
     else:
         print("Logged in unsuccessful..")
         print('Please Type Again')
-        main_login_page(user_list, supplier_list, inventory_list, supplier, inventory, hospital_list)
+        main_login_page(user_list, supplier_list, inventory_list, hospital_list, supplier, inventory)
 
 
 def admin_main_menu(user_list, supplier_list, inventory_list, hospital_list):
@@ -225,7 +222,7 @@ def admin_main_menu(user_list, supplier_list, inventory_list, hospital_list):
             admin_inventory_menu(user_list, supplier_list, inventory_list, hospital_list)
 
         elif choice == '5':
-            admin_inventory_menu(user_list, supplier_list, inventory_list, hospital_list)
+            search_function(user_list, supplier_list, inventory_list, hospital_list)
         else:
             print("Sorry I don't Understand, please type again")
             admin_main_menu(user_list, supplier_list, inventory_list, hospital_list)
@@ -237,10 +234,9 @@ def admin_inventory_menu(user_list, supplier_list, inventory_list, hospital_list
         print("2.  Inventory Distribute(-)")
         print("3.  Modify Inventory Data")
         print("4.  Summary Inventory")
-        print("5.  Search Inventory")
-        print("6.  Delete Inventory")
-        print("7.  Main Menu")
-        print("8.  Exit")
+        print("5.  Delete Inventory")
+        print("6.  Main Menu")
+        print("7.  Exit")
         choice = input("Enter your choice: ")
         print("==" * 30)
         if choice == '1':
@@ -253,24 +249,20 @@ def admin_inventory_menu(user_list, supplier_list, inventory_list, hospital_list
             modify_inventory_data(user_list, supplier_list, inventory_list, hospital_list)
 
         elif choice == '4':
-            display_inventory_list(user_list, supplier_list, inventory_list, hospital_list)
+            inventory_summary(user_list, supplier_list, inventory_list, hospital_list)
 
         elif choice == '5':
-            search_item(user_list, supplier_list, inventory_list, hospital_list)
-
-        elif choice == '6':
             delete_item(inventory_list)
 
-        elif choice == '7':
+        elif choice == '6':
             admin_main_menu(user_list, supplier_list, inventory_list, hospital_list)
 
-        elif choice == '8':
+        elif choice == '7':
             exit()
 
         else:
             print("Sorry I Don't Understand, Please Type Again")
             admin_inventory_menu(user_list, supplier_list, inventory_list, hospital_list)
-
 
 
 def admin_supplier_menu(user_list, supplier_list, inventory_list, hospital_list):
@@ -279,11 +271,31 @@ def admin_supplier_menu(user_list, supplier_list, inventory_list, hospital_list)
         print("2.  Delete Supplier")
         print("3.  Modify Supplier Data")
         print("4.  Supplier Summary")
-        print("5.  Search Supplier")
-        print("6.  Main Menu")
-        print("7.  Exit")
+        print("5.  Main Menu")
+        print("6.  Exit")
         choice = input("Enter your choice: ")
         print("==" * 30)
+        if choice == '1':
+            add_supp(user_list, supplier_list, inventory_list, hospital_list)
+
+        elif choice == '2':
+            delete_supp(supplier_list)
+
+        elif choice == '3':
+            modify_supp(user_list, supplier_list, inventory_list, hospital_list)
+
+        elif choice == '4':
+            supplier_summary(user_list, supplier_list, inventory_list, hospital_list)
+
+        elif choice == '5':
+            admin_main_menu(user_list, supplier_list, inventory_list, hospital_list)
+
+        elif choice == '6':
+            exit()
+
+        else:
+            print("Sorry I Don't Understand, Please Type Again")
+            admin_inventory_menu(user_list, supplier_list, inventory_list, hospital_list)
 
 
 def admin_hospital_menu(user_list, supplier_list, inventory_list, hospital_list):
@@ -292,11 +304,31 @@ def admin_hospital_menu(user_list, supplier_list, inventory_list, hospital_list)
         print("2.  Delete Hospital")
         print("3.  Modify Hospital Data")
         print("4.  Hospital Summary")
-        print("5.  Search Hospital")
-        print("6.  Main Menu")
-        print("7.  Exit")
+        print("5.  Main Menu")
+        print("6.  Exit")
         choice = input("Enter your choice: ")
         print("==" * 30)
+        if choice == '1':
+            add_hospital(user_list, supplier_list, inventory_list, hospital_list)
+
+        elif choice == '2':
+            delete_hospital(user_list, supplier_list, inventory_list, hospital_list)
+
+        elif choice == '3':
+            modify_hospital_data(user_list, supplier_list, inventory_list, hospital_list)
+
+        elif choice == '4':
+            hospital_summary(user_list, supplier_list, inventory_list, hospital_list)
+
+        elif choice == '5':
+            admin_main_menu(user_list, supplier_list, inventory_list, hospital_list)
+
+        elif choice == '6':
+            exit()
+
+        else:
+            print("Sorry I Don't Understand, Please Type Again")
+            admin_inventory_menu(user_list, supplier_list, inventory_list, hospital_list)
 
 
 def admin_user_menu(user_list, supplier_list, inventory_list, hospital_list):
@@ -304,7 +336,7 @@ def admin_user_menu(user_list, supplier_list, inventory_list, hospital_list):
         print("1.  Add user")
         print("2.  Delete user")
         print("3.  Modify User")
-        print("4.  Search User")
+        print("4.  Summary User")
         print("5.  Main Menu")
         print("6.  Exit")
         choice = input("Enter your choice: ")
@@ -318,16 +350,16 @@ def admin_user_menu(user_list, supplier_list, inventory_list, hospital_list):
         # user_list = temp_list
         # print(user_list)
         if choice == "1":
-            add_user(user_list)
+            add_user(user_list, supplier_list, inventory_list, hospital_list)
 
         if choice == "2":
             delete_user(user_list)
 
         if choice == "3":
-            modify_user(user_list)
+            modify_user(user_list, supplier_list, inventory_list, hospital_list)
 
         if choice == "4":
-            search_user(user_list)
+            user_summary(user_list, supplier_list, inventory_list, hospital_list)
 
         if choice == "5":
             admin_main_menu(user_list, supplier_list, inventory_list, hospital_list)
@@ -335,64 +367,56 @@ def admin_user_menu(user_list, supplier_list, inventory_list, hospital_list):
         if choice == "6":
             exit()
 
+
 def search_function(user_list, supplier_list, inventory_list, hospital_list):
     print("Search Page")
-    print("1. Search user")
-    print("2. Search items")
-    print("3. Search user")
-    print("4. Search items")
+    print("1. Search User")
+    print("2. Search Items")
+    print("3. Search Supplier")
+    print("4. Search Hospital")
+    print("5. Transaction Record")
     choice = input("Enter your choice: ")
     if choice == "1":
-        search_user(user_list)
+        search_user(user_list, supplier_list, inventory_list, hospital_list)
 
     if choice == "2":
-        search_items(inventory_list)
+        search_items(user_list, supplier_list, inventory_list, hospital_list)
 
 
-def add_user(user_list):
+def add_user(user_list, supplier_list, inventory_list, hospital_list):
     same_ID = False
     while True:
         print("Add user page.")
-        user_ID = input("Enter the user ID: ")
-        user_name = input("Enter the user name: ")
-        user_pw = input("Enter the user password: ")
-        user_type = input("Choose the type of user (admin / staff): ")
-        user_details = str(user_ID) + ":" + str(user_name) + ":" + str(user_pw) + ":" + str(user_type).lower()
+        print('=='*30)
+        user_ID = input("Enter the user ID: ").strip()
+        user_name = input("Enter the user name: ").strip()
+        user_pw = input("Enter the user password: ").strip()
+        user_type = input("Choose the type of user (admin / staff): ").lower().strip()
+        user_details = str(user_ID) + ":" + str(user_name) + ":" + str(user_pw) + ":" + str(user_type)
         # user_list.append(user_details)
-        with open("users.txt", "a") as user_f:
-            print(user_list)
-            for i in range(len(user_list)):
-                print(user_ID)
-                print(user_list[i][0])
-                if user_ID == user_list[i][0]:
-                    print("User ID have been used, please change another.")
-                    # ask = input("Did you finish add new user (y/n)?")
-                    # print("---" * 30)
-                    # if ask == "y":
-                    #     break
-                    # if ask == "n":
-                    #     continue
-                    # ask = input("Did you finish add new user (y/n)?")
-                    # print("---" * 30)
-                    # if ask == "y":
-                    #     break
-                    # if ask == "n":
-                    #     continue
+        with open("users.txt", "r") as user_f , open("users.txt","a") as user_append:
+            for list in user_f:
+                list = list.strip().split(':')
+                if user_ID == list[0]:
+                    same_ID = True
+                    print("User ID Have Been Used, Please Change Another.")
+                    continue
 
-                else:
-                    user_f.write(user_details + "\n")
-        ask = input("Did you finish add new user (y/n)?")
-        print("---" * 30)
+                elif not same_ID:
+                    user_append.write(user_details + "\n")
+                    ask = input("Did you finish add new user (y/n)?").lower().strip()
+                    print("---" * 30)
 
-        if ask == "y":
-            user_list.append(user_details)
-            break
-        if ask == "n":
-            user_list.append(user_details)
-            continue
+                    if ask == "y":
+                        user_list.append(user_details)
+                        admin_main_menu(user_list, supplier_list, inventory_list, hospital_list)
+
+                    elif ask == "n":
+                        user_list.append(user_details)
+                        add_user(user_list, supplier_list, inventory_list, hospital_list)
 
 
-def modify_user(user_list):
+def modify_user(user_list, supplier_list, inventory_list, hospital_list):
     # print modify menu
     print("Modify Page")
     print("1. Change User ID")
@@ -405,16 +429,18 @@ def modify_user(user_list):
     if choice == "1":
         print("Change User ID Page")
         print('='*30)
+        count = 0
         search_userID = input("Enter the user id you want to search:")
+        with open('users.txt', 'r') as file_line:
+            line = len(file_line.readlines())
         with open("users.txt", "w") as user_f:
             for i in user_list:
-                # print(i)
-                print(i)
+
                 if search_userID == i[0]:
-                    print("Old user name: ", i[1])
+                    print("Old UserID:", i[0])
                     new_id = input("Enter Your New User Name: ")
                     # i[1] = new_name
-                    i[1] = new_id
+                    i[0] = new_id
                     print("Name Change Successful.....")
                     # join ":" into the file to separate it.
                     # user_f.write(":".join(user_list[i]) + "\n")
@@ -423,52 +449,88 @@ def modify_user(user_list):
 
                     print(user_list)
                 # for i in range(len(user_list)):
+                elif count >= line and search_userID != i[0]:
+                    print('The UserID Not Exist')
+                    user_f.write(":".join(i) + "\n")
                 else:
                     user_f.write(":".join(i) + "\n")
         return
-
     if choice == "2":
-        print("Change user password.")
-        search_userID = input("Enter the userID you want to search: ")
+        count = 0
+        print("Change user Name.")
+        search_userID = input("Enter the userID you want to edit: ")
+        with open('users.txt', 'r') as file_line:
+            line = len(file_line.readlines())
         with open("users.txt", "w") as user_f:
             for i in user_list:
                 if search_userID == i[0]:
-                    old_pw = input("Enter your old password: ")
-                    if old_pw == i[2]:
-                        new_pw = input("Enter your new password: ")
-                        i[2] = new_pw
-                        # user_list = temp_list
-                        print("Password change successful....")
-                        user_f.write(":".join(i) + "\n")
-                    else:
-                        user_f.write(":".join(i) + "\n")
+                    print('Old Name:', i[1])
+                    new_name = input("Enter New User Name: ")
+                    i[1] = new_name
+                    print("Name change successful....")
+                    user_f.write(":".join(i) + "\n")
+                elif count >= line and search_userID != i[0]:
+                    print('The UserID Not Exist')
+                    user_f.write(":".join(i) + "\n")
                 else:
                     user_f.write(":".join(i) + "\n")
 
     if choice == "3":
-        print("Change user Type.")
-        search_userID = input("Enter the userID you want to search: ")
+        print("Change user password.")
+        count = 0
+        search_userID = input("Enter the userID you want to edit: ")
+        with open('users.txt', 'r') as file_line:
+            line = len(file_line.readlines())
         with open("users.txt", "w") as user_f:
             for i in user_list:
+                count += 1
                 if search_userID == i[0]:
-                    print("The user type for this user ID is: ", i[3])
-                    if i[3] == "staff":
-                        new_type = "admin"
-                        i[3] = new_type
-                        user_f.write(":".join(i) + "\n")
-                        print("User type change successfully to admin....")
-
-                    elif i[3] == "admin":
-                        new_type = "staff"
-                        i[3] = new_type
-                        user_f.write(":".join(i) + "\n")
-                        print("User type change successfully to staff....")
+                    new_pw = input("Enter your new password: ")
+                    i[2] = new_pw
+                    # user_list = temp_list
+                    print("Password change successful....")
+                    user_f.write(":".join(i) + "\n")
+                elif count >= line and search_userID != i[0]:
+                    print('The UserID Not Exist')
+                    user_f.write(":".join(i) + "\n")
                 else:
+                    user_f.write(":".join(i) + "\n")
+
+    if choice == "4":
+        print("Change user Type.")
+        search_userID = input("Enter the userID you want to edit: ")
+        count = 0
+        with open('users.txt', 'r') as file_line:
+            line = len(file_line.readlines())
+        with open("users.txt", "w") as user_f:
+            for i in user_list:
+                count += 1
+                if search_userID == i[0]:
+                    print("The user type for this user ID is:", i[3])
+                    confirm = input('Are You Sure Need To Change? (Y/N): ').upper().strip()
+                    if confirm == 'Y':
+                        if i[3] == "staff":
+                            new_type = "admin"
+                            i[3] = new_type
+                            user_f.write(":".join(i) + "\n")
+                            print("User type change successfully to admin....")
+
+                        elif i[3] == "admin":
+                            new_type = "staff"
+                            i[3] = new_type
+                            user_f.write(":".join(i) + "\n")
+                            print("User type change successfully to staff....")
+                    else:
+                        print('User Type Change Failed')
+                        user_f.write(":".join(i) + "\n")
+                elif count >= line and search_userID != i[0]:
                     print("The userID does not match and the user type cannot be changed.")
+                    user_f.write(":".join(i) + "\n")
+                else:
                     user_f.write(":".join(i) + "\n")
 
 
-def search_user(user_list):
+def search_user(user_list, supplier_list, inventory_list, hospital_list):
     userfound = False
     print("Search user page")
     print(user_list)
@@ -491,7 +553,7 @@ def search_user(user_list):
                 break
 
 
-def search_items(inventory_list):
+def search_items(user_list, supplier_list, inventory_list, hospital_list):
     print("Search items page")
     search_item_code = input("Enter the items code you want to search: ")
     for i in range(len(inventory_list)):
@@ -508,7 +570,7 @@ def search_items(inventory_list):
             return
 
 
-def supp_info(supplier_list):
+def supp_info(user_list, supplier_list, inventory_list, hospital_list):
     print("Supplier information page.")
     print("1. Add supplier")
     print("2. Modify supplier")
@@ -520,19 +582,51 @@ def supp_info(supplier_list):
             supp_data = line.strip().split(",")
             supplier_list.append(supp_data)
     if choice == "1":
-        add_supp()
+        add_supp(user_list, supplier_list, inventory_list, hospital_list)
 
     if choice == "2":
-        modify_supp(supplier_list)
+        modify_supp(user_list, supplier_list, inventory_list, hospital_list)
 
     if choice == "3":
-        delete_supp(supplier_list)
+        delete_supp(user_list, supplier_list, inventory_list, hospital_list)
 
     if choice == "4":
         return
 
+def add_hospital(user_list, supplier_list, inventory_list, hospital_list):
+    with open("hospital.txt", "r") as file:
+        allrec = []
+        for line in file:
+            rec = line.strip().split(",")
+            allrec.append(rec)
+    num = 4 - len(allrec)
+    while num != 0:
+        print("Add New Hospital")
+        print(allrec)
+        hospital_code = input("Enter the supplier code: ")
+        hospital_name = input("Enter the name of supplier:")
+        hospital_email = input("Enter the phone number of the supplier: ")
+        hospital_phone_number = input("Enter the mail box of the supplier: ")
+        last_distribute_date = date_time()
+        hospital_details = f'{hospital_code},{hospital_name},{hospital_phone_number},{hospital_email},{last_distribute_date}'
+        num = num - 1
+        print(hospital_details)
+        with open("hospital.txt", "a") as file:
+            file.write(hospital_details + "\n")
+        # if supp_code != rec[0]:
+        # else:
+        # print("Supplier have been taken")
+        choice = input("Did you finish input the details of the inventory (y/n)?")
+        if choice == "y":
+            admin_main_menu(user_list, supplier_list, inventory_list, hospital_list)
+        elif choice == "n":
+            add_hospital(user_list, supplier_list, inventory_list, hospital_list)
+        elif choice == "n" and num == 0:
+            print("Hospital Full")
+            admin_main_menu(user_list, supplier_list, inventory_list, hospital_list)
 
-def add_supp():
+
+def add_supp(user_list, supplier_list, inventory_list, hospital_list):
     with open("suppliers.txt", "r") as file:
         allrec = []
         for line in file:
@@ -540,27 +634,101 @@ def add_supp():
             allrec.append(rec)
     num = 4 - len(allrec)
     while num != 0:
-        print("Add new supplier")
+        print("Add New Supplier")
         print(allrec)
-        supp_code = input("Enter the supplier code: ")
-        supp_name = input("Enter the name of supplier:")
-        supp_phonenum = input("Enter the phone number of the supplier: ")
-        supp_mail = input("Enter the mail box of the supplier: ")
+        supp_code = input("Enter The Supplier Code: ")
+        supp_name = input("Enter The Name Of Supplier:")
+        supp_phone_number = input("Enter The Phone Number Of The Supplier: ")
+        supp_mail = input("Enter The Email  Of The Supplier: ")
         last_supply_date = date_time()
-        supp_details = f'{supp_code},{supp_name},{supp_phonenum},{supp_mail},{last_supply_date}'
+        supp_details = f'{supp_code},{supp_name},{supp_phone_number},{supp_mail},{last_supply_date}'
         num = num - 1
         # if supp_code != rec[0]:
         # else:
         # print("Supplier have been taken")
-        choice = input("Did you finish input the details of the inventory (y/n)?")
+        choice = input("Did you finish input the details of the inventory (y/n)?").lower().strip()
         if choice == "y":
-            break
+            admin_main_menu(user_list, supplier_list, inventory_list, hospital_list)
+        elif choice == "n":
+            add_supp(user_list, supplier_list, inventory_list, hospital_list)
+        elif choice == "n" and num == 0:
+            print("Supplier Full")
+            admin_main_menu(user_list, supplier_list, inventory_list, hospital_list)
 
-        if choice == "n":
-            with open("suppliers.txt", "a") as file:
-                file.write(supp_details + "\n")
-    print("supplier full")
 
+def modify_hospital_data(user_list, supplier_list, inventory_list, hospital_list):
+    print("Modify Hospital Page")
+    print('=' * 30)
+    hospital_code = input('Hospital Code:').upper().strip()
+    count = 0
+    hospital_found = False
+    with open('hospital.txt', 'r') as file_line:
+        line = len(file_line.readlines())
+    with open('hospital.txt', 'r') as check:
+        for hospitals in check:
+            count += 1
+            if hospitals.startswith(hospital_code):
+                hospitals = hospitals.strip().split(',')
+                print(
+                    f'Hospital Code:{hospitals[0]}   Hospital Name:{hospitals[1]}   Hospital Phone Number:{hospitals[3]}       Hospital Email:{hospitals[2]}'
+                    f'Last Distribute Date:{hospitals[4]}\n')
+                confirm = input('Is This Hospital Information You Need To edit? Y/N:').upper().strip()
+                if confirm == 'Y':
+                    hospital_found = True
+                    continue
+                elif confirm == 'N':
+                    confirm2 = input('1. Type Again\n2.Return To Main Menu\n>')
+                    if confirm2.strip() == '1':
+                        modify_hospital_data(user_list, supplier_list, inventory_list, hospital_list)
+                    elif confirm2.strip() == '2':
+                        admin_main_menu(user_list, supplier_list, inventory_list, hospital_list)
+            elif count >= line and not hospital_found:
+                print('Hospital Not Found')
+                confirm3 = input('1. Type Again\n2.Return To Main Menu\n>')
+                if confirm3.strip() == '1':
+                    modify_hospital_data(user_list, supplier_list, inventory_list, hospital_list)
+                elif confirm3.strip() == '2':
+                    admin_main_menu(user_list, supplier_list, inventory_list, hospital_list)
+
+    if hospital_found:
+        print("1. Change Hospital Code")
+        print("2. Change Hospital Name")
+        print("3. Change Hospital Email")
+        print("4. Change Hospital Phone Number")
+        print("5. Back")
+        choice = input("Enter your choice: ")
+        with open('hospital.txt', 'r') as check_lines:
+            lines = check_lines.readlines()
+
+        with open('hospital.txt', 'w') as hospital_f:
+            for hospital in lines:
+                if hospital.startswith(hospital_code):
+                    hospital_info = hospital.strip().split(',')
+                    if choice == '1':
+                        new_code = input('Please Type The New Hospital Code:').upper().strip()
+                        hospital_info[0] = new_code
+                    elif choice == '2':
+                        new_hospital_name = input('Please Type The New Hospital Name:').upper().strip()
+                        hospital_info[1] = new_hospital_name
+                    elif choice == '3':
+                        new_email = input('Please Type The New Hospital Email:').upper().strip()
+                        hospital_info[2] = new_email
+                    elif choice == '4':
+                        new_phone_number = input('Please Type The New Hospital Number:').upper().strip()
+                        hospital_info[3] = new_phone_number
+                    else:
+                        print("Sorry I Dont Understand , Please Type Again.")
+                        modify_hospital_data(user_list, supplier_list, inventory_list, hospital_list)
+
+                    print(f'After Update...\n'
+                          f'Hospital Code:{hospital_info[0]}   Hospital Name:{hospital_info[1]}   Hospital Email:{hospital_info[2]}    '
+                          f'Hospital Phone Number:{hospital_info[3]}      Last Supply Date:{hospital_info[4]}\n')
+                    print('Item Successfully Updated!')
+                    hospital_f.write(','.join(hospital_info) + "\n")
+
+                else:
+                    hospital_f.write(hospital)
+    admin_main_menu(user_list, supplier_list, inventory_list, hospital_list)
 
 def modify_inventory_data(user_list, supplier_list, inventory_list, hospital_list):
     print("Modify Inventory Page")
@@ -585,16 +753,16 @@ def modify_inventory_data(user_list, supplier_list, inventory_list, hospital_lis
                 elif confirm == 'N':
                     confirm2 = input('1. Type Again\n2.Return To Main Menu\n>')
                     if confirm2.strip() == '1':
-                        supply(user_list, supplier_list, inventory_list, hospital_list)
+                        modify_inventory_data(user_list, supplier_list, inventory_list, hospital_list)
                     elif confirm2.strip() == '2':
                         admin_main_menu(user_list, supplier_list, inventory_list, hospital_list)
-            elif count >= 6 and not item_found:
+            elif count >= line and not item_found:
                 print('Items Not Found')
                 confirm3 = input('1. Type Again\n2.Return To Main Menu\n>')
                 if confirm3.strip() == '1':
-                    supply(user_list, supplier_list, inventory_list, hospital_list)
+                    modify_inventory_data(user_list, supplier_list, inventory_list, hospital_list)
                 elif confirm3.strip() == '2':
-                    pass
+                    admin_main_menu(user_list, supplier_list, inventory_list, hospital_list)
 
     if item_found:
         print("1. Change Item Code")
@@ -609,7 +777,6 @@ def modify_inventory_data(user_list, supplier_list, inventory_list, hospital_lis
             for item in lines:
                 if item.startswith(item_change):
                     item_info = item.strip().split(',')
-                    item_code, item_name, item_supplier, item_quantity, last_supply_date, last_distribute_date = item_info
                     if choice == '1':
                         new_code = input('Please Type Your New Item Code:').upper().strip()
                         item_info[0] = new_code
@@ -645,7 +812,7 @@ def modify_inventory_data(user_list, supplier_list, inventory_list, hospital_lis
                     edit_quantity.write(item)
 
 
-def modify_supp(supplier_list):
+def modify_supp(user_list, supplier_list, inventory_list, hospital_list):
     print("Modify Supplier Page")
     print('='*30)
     print("1. Change Supplier Code")
@@ -707,7 +874,7 @@ def modify_supp(supplier_list):
         #             print("New name have change successful !!")
 
     if choice == "3":
-        supp_info(supplier_list)
+        supp_info(user_list, supplier_list, inventory_list, hospital_list)
 
 
 def delete_supp(supplier_list):
@@ -723,13 +890,13 @@ def delete_supp(supplier_list):
                 # 利用join function来把list 变成string
                 supp_f.write(":".join(supplier_list[i]) + "\n")
 
-def delete_hospital(hospital_list):
+def delete_hospital(user_list, supplier_list, inventory_list, hospital_list):
     print("Delete Hospital Page")
     search_hospital_code = input("Enter the hospital code you want to delete: ")
     with open("hospital.txt", "w") as supp_f:
         for i in range(len(hospital_list)):
             if search_hospital_code == hospital_list[i][0]:
-                print("Supplier Deleted")
+                print("Hospital Deleted")
                 break
 
             else:
@@ -738,12 +905,12 @@ def delete_hospital(hospital_list):
 
 def delete_user(user_list):
     print("Delete User Page")
-    search_user_ID = input("Enter the user id you want to search: ")
+    search_user_ID = input("Enter the user id you want to delete: ").strip()
     with open("users.txt", "w") as user_f:
         for i in range(len(user_list)):
             if search_user_ID == user_list[i][0]:
                 print("User Deleted")
-                break
+                print('-'*30)
             else:
                 user_f.write(":".join(user_list[i]) + "\n")
     # print("Delete user page")
@@ -759,14 +926,14 @@ def delete_user(user_list):
 
 def delete_item(inventory_list):
     print('Delete Item Page')
-    item_code = input("Enter the user id you want to search: ")
+    item_code = input("Enter the user id you want to delete: ")
     with open("ppe.txt", "w") as inventory_f:
         for i in range(len(inventory_list)):
             if item_code == inventory_list[i][0]:
                 print("User Deleted")
                 break
             else:
-                inventory_f.write(":".join(inventory_list[i]) + "\n")
+                inventory_f.write(",".join(inventory_list[i]) + "\n")
 
 
 def staff_menu(user_list, supplier_list, inventory_list, hospital_list):
@@ -784,7 +951,7 @@ def staff_menu(user_list, supplier_list, inventory_list, hospital_list):
         distribute(user_list, supplier_list, inventory_list, hospital_list)
 
     if choice == "3":
-        display_inventory_list(user_list, supplier_list, inventory_list, hospital_list)
+        inventory_summary(user_list, supplier_list, inventory_list, hospital_list)
 
     if choice == "4":
         search_item(user_list, supplier_list, inventory_list, hospital_list)
@@ -948,7 +1115,7 @@ def distribute(user_list, supplier_list, inventory_list, hospital_list):
         admin_main_menu(user_list, supplier_list, inventory_list, hospital_list)
 
 
-def display_inventory_list(user_list, supplier_list, inventory_list, hospital_list):
+def inventory_summary(user_list, supplier_list, inventory_list, hospital_list):
     all_record = []
     count = 0
     with open('ppe.txt', 'r') as list:
@@ -1059,6 +1226,53 @@ def track_filter_date(user_list, supplier_list, inventory_list, hospital_list):
                           f'\nDate:{date_change}\n')
 
     choice = input('1.Main Menu\n2.Exit').strip()
+    if choice == '1':
+        admin_main_menu(user_list, supplier_list, inventory_list, hospital_list)
+
+    if choice == '2':
+        exit()
+
+    else:
+        admin_main_menu(user_list, supplier_list, inventory_list, hospital_list)
+
+def supplier_summary(user_list, supplier_list, inventory_list, hospital_list):
+    with open('supplier.txt', 'r') as read_supplier:
+        for line in read_supplier:
+            line = line.strip().split(',')
+            print(f'Supplier Code:{line[0]}     Supplier Name:{line[1]}     Supplier Phone Number:{line[2]}'
+                  f'Supplier Email:{line[3]}      Last Supply Date:{line[4]} ')
+    choice = input('1.Main Menu\n2.Exit').strip()
+    if choice == '1':
+        admin_main_menu(user_list, supplier_list, inventory_list, hospital_list)
+
+    if choice == '2':
+        exit()
+
+    else:
+        admin_main_menu(user_list, supplier_list, inventory_list, hospital_list)
+def user_summary(user_list, supplier_list, inventory_list, hospital_list):
+    with open('users.txt', 'r') as read_users:
+        for line in read_users:
+            line = line.strip().split(':')
+            print(f'UserID:{line[0]}     User Name:{line[1]}     User Password:{line[2]}        '
+                  f'User Type:{line[3]} \n ')
+    choice = input('1.Main Menu\n2.Exit').strip()
+    if choice == '1':
+        admin_main_menu(user_list, supplier_list, inventory_list, hospital_list)
+
+    if choice == '2':
+        exit()
+
+    else:
+        admin_main_menu(user_list, supplier_list, inventory_list, hospital_list)
+
+def hospital_summary(user_list, supplier_list, inventory_list, hospital_list):
+    with open('hospital.txt', 'r') as read_hospital:
+        for line in read_hospital:
+            line = line.strip().split(',')
+            print(f'Hospital Code:{line[0]}     Hospital Name:{line[1]}     Hospital Phone Number:{line[2]}'
+                  f'Hospital Email:{line[3]}      Last Distribute Date:{line[4]} ')
+    choice = input('1.Main Menu\n2.Exit\nEnter Your Choice:').strip()
     if choice == '1':
         admin_main_menu(user_list, supplier_list, inventory_list, hospital_list)
 
