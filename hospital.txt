@@ -1,3 +1,0 @@
-SPHS, Sungai Pal Hospital, MS,FS, Mon Oct 23 18:04:47 2023
-MWHS, Mou Wish Hospital, GL,HC, Mon Oct 23 18:04:47 2023
-CSHS, Cyber Science Hospital, GW,SC, Mon Oct 23 18:04:47 2023

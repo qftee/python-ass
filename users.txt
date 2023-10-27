@@ -1,6 +1,4 @@
 007:jq:070:admin
-012:ok:123:staff
-013:kl:456:admin
-1234:kk:5454:staff
-3214:kj:3321:admin
-321:ds:54:staff
+012:010:123:staff
+013:kl:012:staff
+df:df:123:staff
