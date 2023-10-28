@@ -231,8 +231,10 @@ def admin_inventory_menu(user_list, supplier_list, inventory_list, hospital_list
         print("3.  Modify Inventory Data")
         print("4.  Summary Inventory")
         print("5.  Delete Inventory")
-        print("6.  Main Menu")
-        print("7.  Exit")
+        print("6.  Add New Inventory")
+        print("7.  Inventory Quantity < 25")
+        print("8.  Main Menu")
+        print("9.  Exit")
         choice = input("Enter your choice: ")
         print("==" * 30)
         if choice == '1':
@@ -251,9 +253,15 @@ def admin_inventory_menu(user_list, supplier_list, inventory_list, hospital_list
             delete_item()
 
         elif choice == '6':
-            admin_main_menu(user_list, supplier_list, inventory_list, hospital_list)
+            add_inventory(user_list, supplier_list, inventory_list, hospital_list)
 
         elif choice == '7':
+            less_25(user_list, supplier_list, inventory_list, hospital_list)
+
+        elif choice == '8':
+            admin_main_menu(user_list, supplier_list, inventory_list, hospital_list)
+
+        elif choice == '9':
             exit()
 
         else:
@@ -564,6 +572,60 @@ def search_items(user_list, supplier_list, inventory_list, hospital_list):
         else:
             print("This item was not found.")
             return
+
+
+def add_inventory(user_list, supplier_list, inventory_list, hospital_list):
+    item_exist = False
+    supplier_found = False
+    with open('suppliers.txt', 'r') as file_line:
+        supp_line = len(file_line.readlines())
+    with open("ppe.txt", "r") as file:
+        allrec = []
+        for read in file:
+            rec = read.strip().split(",")
+            allrec.append(rec)
+    print("Add New Inventory Page")
+    print('==' * 30)
+    item_code = input("Enter the item code: ").upper().strip()
+    item_name = input("Enter the name of item:").upper().strip()
+    item_supplier_code = input("Enter the item supplier code: ").upper().strip()
+    item_last_supply_date = date_time()
+    item_last_distribute_date = date_time()
+    item_details = f'{item_code},{item_name},{item_supplier_code},100,{item_last_supply_date},{item_last_distribute_date}'.strip()
+    with open('suppliers.txt', 'r') as supplier_f:
+        count = 0
+        for supplier in supplier_f:
+            count += 1
+            if supplier.startswith(item_supplier_code):
+                supplier_found = True
+                continue
+            elif not supplier_found and count >= supp_line:
+                print('Sorry,The Supplier You Type Not Registered,Please Type Again')
+                admin_main_menu(user_list, supplier_list, inventory_list, hospital_list)
+                break
+    with open("ppe.txt", "r") as read_ppe:
+        lines = read_ppe.readlines()
+    for convert in lines:
+        item_detail = convert.replace("\n", "").split(",")
+        if item_code == item_detail[0] and item_name == item_detail[1]:
+            item_exist = True
+    if item_exist:
+        print('Item already exist')
+    elif not item_exist:
+        print(
+            f'Item Code:{item_code}   Item Name:{item_name}    Item Supplier Code:{item_supplier_code}')
+        confirm = input('Are You Sure To Add This Item? (Y/N): ').upper().strip()
+        if confirm == 'Y':
+            print('Item Added')
+            with open("ppe.txt", "a") as file:
+                file.write(item_details + "\n")
+        else:
+            print('Item Adding Fail....')
+    choice = input(" Add Another Item?(y/n): ")
+    if choice == "n":
+        admin_main_menu(user_list, supplier_list, inventory_list, hospital_list)
+    elif choice == "y":
+        add_inventory(user_list, supplier_list, inventory_list, hospital_list)
 
 
 def add_hospital(user_list, supplier_list, inventory_list, hospital_list):
@@ -1203,13 +1265,21 @@ def inventory_summary(user_list, supplier_list, inventory_list, hospital_list):
 
 
 def less_25(user_list, supplier_list, inventory_list, hospital_list):
+    count = 0
+    item_less_25 = False
     with open('ppe.txt', 'r') as check:
-        for line in check:
-            item = line.strip().split(',')
-            item_code, item_name, supplier_code, item_quantity, last_supply_date, last_distribute_date = item
+        line = len(check.readlines())
+        check.seek(0)
+        for item in check:
+            count += 1
+            item_info = item.strip().split(',')
+            item_code, item_name, supplier_code, item_quantity, last_supply_date, last_distribute_date = item_info
             if int(item_quantity) < 25:
+                item_less_25 = True
                 print(f"{item_code}'s quantity is below 25 boxes,\n"
-                      f"The Remaining quantity is {item_quantity}\n")
+                      f"The Remaining quantity is {item_quantity} boxes\n")
+    if count >= line and not item_less_25:
+        print('All The Items In our Inventory Is More Than 25 Boxes')
     choice = input('1.Main Menu\n2.Exit').strip()
     if choice == '1':
         admin_main_menu(user_list, supplier_list, inventory_list, hospital_list)
@@ -1217,7 +1287,8 @@ def less_25(user_list, supplier_list, inventory_list, hospital_list):
     if choice == '2':
         exit()
 
-    else:admin_main_menu(user_list, supplier_list, inventory_list, hospital_list)
+    else:
+        admin_main_menu(user_list, supplier_list, inventory_list, hospital_list)
 
 
 def search_item(user_list, supplier_list, inventory_list, hospital_list):
@@ -1295,6 +1366,7 @@ def track_filter_date(user_list, supplier_list, inventory_list, hospital_list):
     else:
         admin_main_menu(user_list, supplier_list, inventory_list, hospital_list)
 
+
 def supplier_summary(user_list, supplier_list, inventory_list, hospital_list):
     with open('suppliers.txt', 'r') as read_supplier:
         for line in read_supplier:
@@ -1310,6 +1382,8 @@ def supplier_summary(user_list, supplier_list, inventory_list, hospital_list):
 
     else:
         admin_main_menu(user_list, supplier_list, inventory_list, hospital_list)
+
+
 def user_summary(user_list, supplier_list, inventory_list, hospital_list):
     with open('users.txt', 'r') as read_users:
         for line in read_users:
