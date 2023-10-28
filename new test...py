@@ -182,28 +182,20 @@ def add_user(user_list):
         user_type = input("Choose the type of user (admin / staff): ")
         user_details = str(user_ID) + ":" + str(user_name) + ":" + str(user_pw) + ":" + str(user_type).lower()
         # user_list.append(user_details)
+        with open("users.txt","r") as user_read:
+            for lines in user_read:
+                line = lines.strip().split(":")
+                user_list.append(line)
         with open("users.txt","a") as user_f:
             print(user_list)
-            for i in range(len(user_list)):
-                print(user_ID)
-                print(user_list[i][0])
-                if user_ID == user_list[i][0]:
+            for i in user_list:
+                if user_ID == i[0]:
+                    same_ID = True
                     print("User ID have been used, please change another.")
-                    # ask = input("Did you finish add new user (y/n)?")
-                    # print("---" * 30)
-                    # if ask == "y":
-                    #     break
-                    # if ask == "n":
-                    #     continue
-                    # ask = input("Did you finish add new user (y/n)?")
-                    # print("---" * 30)
-                    # if ask == "y":
-                    #     break
-                    # if ask == "n":
-                    #     continue
-
-                else:
-                    user_f.write(user_details + "\n")
+                    break
+            print(same_ID)
+            if same_ID == False:
+                user_f.write(user_details + "\n")
         ask = input("Did you finish add new user (y/n)?")
         print("---"*30)
 
