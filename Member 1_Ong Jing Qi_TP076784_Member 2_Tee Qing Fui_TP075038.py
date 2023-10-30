@@ -64,9 +64,10 @@ def check_file():
             # If the file is empty, call the add_user function.
             if user_data == '':
                 add_user(user_list, supplier_list, inventory_list, hospital_list)
-            for line in user_file:
-                line = line.strip().split(":")
-                user_list.append(line)
+            else:
+                for line in user_file:
+                    line = line.strip().split(":")
+                    user_list.append(line)
 
     # If the file doesn't exist, create an empty one and call add_user function.
     except FileNotFoundError:
@@ -175,10 +176,12 @@ def main_login_page(user_list, supplier_list, inventory_list, hospital_list, sup
     user_pw = input("Enter your password: ").strip()
 
     # Check user credentials against the user list.
-    for user_info in user_list:
-        if user_id == user_info[0] and user_pw == user_info[2]:
-            user_login = True
-            break
+    with open('users.txt','r') as users:
+        for user_info in users:
+            user_info = user_info.strip().split(":")
+            if user_id == user_info[0] and user_pw == user_info[2]:
+                user_login = True
+                break
 
     if user_login:
         # If user is successfully logged in:
@@ -449,7 +452,6 @@ def add_user(user_list, supplier_list, inventory_list, hospital_list):
 
                     if ask == "y":
                         user_list.append(user_details)
-                        user_append.write(user_details + "\n")
                         admin_main_menu(user_list, supplier_list, inventory_list, hospital_list)
 
                     elif ask == "n":
@@ -490,29 +492,32 @@ def modify_user(user_list, supplier_list, inventory_list, hospital_list):
         print('='*30)
         count = 0
         search_userID = input("Enter the user id you want to search:")
-        with open('users.txt', 'r') as file_line:
-            line = len(file_line.readlines())
-        with open("users.txt", "w") as user_f:
-            for i in user_list:
+        with open('users.txt', 'r') as file_line, open("users.txt", "w") as user_f:
+            lines = file_line.readlines()
+            line = len(lines)
+        #with open("users.txt", "w") as user_f:
+            for i in file_line:
+                i = i.strip().split(":")
+                print(i)
 
-                if search_userID == i[0]:
-                    print("Old UserID:", i[0])
-                    new_id = input("Enter Your New User Name: ")
-                    # i[1] = new_name
-                    i[0] = new_id
-                    print("Name Change Successful.....")
-                    # join ":" into the file to separate it.
-                    # user_f.write(":".join(user_list[i]) + "\n")
+            if search_userID == i[0]:
+                print("Old UserID:", i[0])
+                new_id = input("Enter Your New User Name: ")
+                # i[1] = new_name
+                i[0] = new_id
+                print("Name Change Successful.....")
+                # join ":" into the file to separate it.
+                # user_f.write(":".join(user_list[i]) + "\n")
 
-                    user_f.write(":".join(i) + "\n")
+                user_f.write(":".join(i) + "\n")
 
-                    print(user_list)
-                # for i in range(len(user_list)):
-                elif count >= line and search_userID != i[0]:
-                    print('The UserID Not Exist')
-                    user_f.write(":".join(i) + "\n")
-                else:
-                    user_f.write(":".join(i) + "\n")
+                print(user_list)
+            # for i in range(len(user_list)):
+            elif count >= line and search_userID != i[0]:
+                print('The UserID Not Exist')
+                user_f.write(":".join(i) + "\n")
+            else:
+                user_f.write(":".join(i) + "\n")
         return
     if choice == "2":
         # Option to change user name.
@@ -783,7 +788,7 @@ def supplier_summary(user_list, supplier_list, inventory_list, hospital_list):
             # Extract supplier details from each line
             line = line.strip().split(',')
             # Print supplier information
-            print(f'Supplier Code:{line[0]}     Supplier Name:{line[1]}     Supplier Phone Number:{line[2]}     '
+            print(f'Supplier Code:{line[0]}     Supplier Name:{line[1]}     Supplier Phone Number:{line[2]} '
                   f'Supplier Email:{line[3]}      Last Supply Date:{line[4]} ')
     # Ask for user's choice
     choice = input('1.Main Menu\n2.Exit').strip()
@@ -1320,7 +1325,7 @@ def inventory_summary(user_list, supplier_list, inventory_list, hospital_list):
     # Print the inventory summary.
     for i in range(len(all_record)):
         print(
-            f'Item Code:{all_record[i][0]}           Item Name:{all_record[i][1]}           Supplier Code:{all_record[i][2]}            Quantity:{all_record[i][3]} boxes \n'
+            f'Item Code:{all_record[i][0]}           Item Name:{all_record[i][1]}           Supplier Code:{all_record[i][2]}        Quantity:{all_record[i][3]} boxes \n'
             f'Last Supply Date:{all_record[i][4]}         Last Distribute Date:{all_record[i][5]}\n')
     # Get user's choice for next action.
     choice = input('1.Main Menu\n2.Exit\n>').strip()
@@ -1801,11 +1806,12 @@ def staff_inventory_menu(user_list, supplier_list, inventory_list, hospital_list
 def staff_search_function(user_list, supplier_list, inventory_list, hospital_list):
     # Display the search page menu.
     print("Search Page")
-    print("1. Search User")
-    print("2. Search Items")
-    print("3. Search Supplier")
-    print("4. Search Hospital")
-    print("5. Transaction Record")
+    print("1. Search Items")
+    print("2. Search Supplier")
+    print("3. Search Hospital")
+    print("4. Transaction Record")
+    print("5. Main menu ")
+    print("6. Exit ")
     # Get user's choice.
     choice = input("Enter your choice: ")
     # Based on user's choice, call respective search functions.
@@ -1821,8 +1827,12 @@ def staff_search_function(user_list, supplier_list, inventory_list, hospital_lis
     if choice == "4":
         staff_track_filter_date(user_list, supplier_list, inventory_list, hospital_list)
 
-    if choice == '5':
-        staff_track_filter_date(user_list, supplier_list, inventory_list, hospital_list)
+    if choice == "5":
+        staff_main_menu(user_list, supplier_list, inventory_list, hospital_list)
+
+    if choice == '6':
+        exit()
+
 
     print('==' * 30)
 
@@ -1839,10 +1849,11 @@ def staff_add_supp(user_list, supplier_list, inventory_list, hospital_list):
     # Calculate the number of available slots for new suppliers.
     num = 4 - len(allrec)
     # Check if the supplier list is full.
-    if num == 0:
+    if num <= 0:
         print("Supplier Full")
+        staff_main_menu(user_list, supplier_list, inventory_list, hospital_list)
     # Continue adding new suppliers if there are available slots.
-    while num != 0:
+    while num >= 0:
         print("Add New Supplier")
         print('==' * 30)
         # Get supplier details from user input.
@@ -1851,7 +1862,7 @@ def staff_add_supp(user_list, supplier_list, inventory_list, hospital_list):
         supp_phone_number = input("Enter The Phone Number Of The Supplier: ").strip()
         supp_mail = input("Enter The Email  Of The Supplier: ").strip()
         last_supply_date = date_time()
-        supp_details = f'{supp_code},{supp_name},{supp_phone_number},{supp_mail},{last_supply_date}'
+        supp_details = f'{supp_code},{supp_name},{supp_phone_number},{supp_mail},{last_supply_date}\n'
         num = num - 1
         # Check if the new supplier already exists in the records.
         with open("suppliers.txt", "r") as read_supp:
@@ -2434,7 +2445,7 @@ def staff_modify_inventory_data(user_list, supplier_list, inventory_list, hospit
             if items.startswith(item_change):
                 items = items.strip().split(',')
                 print(
-                    f'Item Code:{items[0]}   Item Name:{items[1]}   Item Quantity:{items[2]}    Supply Code:{items[3]}    '
+                    f'Item Code:{items[0]}   Item Name:{items[1]}   Item Quantity:{items[3]}  Supply Code:{items[2]}9  '
                     f'Last Supply Date:{items[4]}\n')
                 confirm = input('Is This Item You Need To edit? Y/N:').upper().strip()
                 # If user confirms, set flag and continue. Otherwise, give options to retry or return to main menu.
@@ -2526,7 +2537,7 @@ def staff_inventory_summary(user_list, supplier_list, inventory_list, hospital_l
     # Print the inventory summary.
     for i in range(len(all_record)):
         print(
-            f'Item Code:{all_record[i][0]}           Item Name:{all_record[i][1]}           Supplier Code:{all_record[i][2]}            Quantity:{all_record[i][3]} boxes \n'
+            f'Item Code:{all_record[i][0]}           Item Name:{all_record[i][1]}           Supplier Code:{all_record[i][2]}     Quantity:{all_record[i][3]} boxes \n'
             f'Last Supply Date:{all_record[i][4]}         Last Distribute Date:{all_record[i][5]}\n')
     # Get user's choice for next action.
     choice = input('1.Main Menu\n2.Exit\n>').strip()

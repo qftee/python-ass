@@ -1,7 +1,2 @@
-007:jq:070:admin
-012:010:123:staff
-013:kl:012:staff
-12:df:123:staff
-jh:jjh:jh:admin
-jh:jjh:jh:admin
-
+007:jq:007:admin
+123:qf:456:staff
