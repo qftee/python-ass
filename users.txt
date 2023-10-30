@@ -1,5 +1,3 @@
-007:jq:070:admin
-012:010:123:staff
-013:kl:012:staff
-df:df:123:staff
-1:1:1:admin
+700:jq:070:admin
+120:ok:123:staff
+0:1:2:::o:k:::1:2:3:::s:t:a:f:f
